@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Application category so the groups appear under their own heading on the user form -->
+    <record id="module_category_creative_studio" model="ir.module.category">
+        <field name="name">Creative Studio</field>
+        <field name="description">Creative briefs, concept routes and art-direction reviews.</field>
+        <field name="sequence">45</field>
+    </record>
+
+    <record id="group_creative_user" model="res.groups">
+        <field name="name">Creative Studio User</field>
+        <field name="category_id" ref="module_category_creative_studio"/>
+        <field name="comment">Works on briefs, routes and assets. Cannot record review decisions
+            or approve a brief.</field>
+    </record>
+
+    <record id="group_art_director" model="res.groups">
+        <field name="name">Art Director</field>
+        <field name="category_id" ref="module_category_creative_studio"/>
+        <field name="implied_ids" eval="[(4, ref('group_creative_user'))]"/>
+        <field name="comment">Art-directs the work: shortlists and selects routes, runs review
+            rounds and requests changes.</field>
+    </record>
+
+    <record id="group_creative_director" model="res.groups">
+        <field name="name">Creative Director</field>
+        <field name="category_id" ref="module_category_creative_studio"/>
+        <field name="implied_ids" eval="[(4, ref('group_art_director'))]"/>
+        <field name="comment">Signs off the creative: approves briefs and may delete records.</field>
+    </record>
+
+    <!-- Multi-company record rules. Every model carries a stored company_id, so the same
+         rule shape applies to all four. -->
+    <record id="rule_creative_brief_company" model="ir.rule">
+        <field name="name">Creative Brief: multi-company</field>
+        <field name="model_id" ref="model_c2p_creative_brief"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_creative_concept_company" model="ir.rule">
+        <field name="name">Concept Route: multi-company</field>
+        <field name="model_id" ref="model_c2p_creative_concept"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_creative_asset_company" model="ir.rule">
+        <field name="name">Creative Asset: multi-company</field>
+        <field name="model_id" ref="model_c2p_creative_asset"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_creative_review_company" model="ir.rule">
+        <field name="name">Review Round: multi-company</field>
+        <field name="model_id" ref="model_c2p_creative_review"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+</odoo>

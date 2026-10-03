@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Fictional client for the demo. -->
+    <record id="demo_partner_margalla_bank" model="res.partner">
+        <field name="name">Margalla Bank</field>
+        <field name="is_company" eval="True"/>
+        <field name="city">Islamabad</field>
+        <field name="comment">Demo client for the Creative Studio walkthrough.</field>
+    </record>
+
+    <record id="demo_brief_digital_savings" model="c2p.creative.brief">
+        <field name="name">Digital Savings Launch</field>
+        <field name="partner_id" ref="demo_partner_margalla_bank"/>
+        <field name="deadline" eval="(DateTime.today() + relativedelta(days=21)).strftime('%Y-%m-%d')"/>
+        <field name="state">review</field>
+        <field name="proposition">Saving starts with one small step you can take today.</field>
+        <field name="tone">Warm, plain-spoken, quietly confident. No jargon, no hard sell.</field>
+        <field name="objective" type="html">
+            <p>Launch the bank's app-first savings account to first-time savers aged 22-35
+               in Karachi, Lahore and Islamabad. Drive app installs and completed
+               account openings in the first eight weeks.</p>
+        </field>
+        <field name="audience" type="html">
+            <p>Salaried and self-employed young adults who have never held a savings
+               product. They are comfortable on a phone, sceptical of banks, and put off
+               by paperwork and minimum balances.</p>
+        </field>
+        <field name="mandatories" type="html">
+            <ul>
+                <li>Profit rate and terms legible in every execution.</li>
+                <li>Urdu and English versions of all copy lines.</li>
+                <li>No depiction of cash; app-first framing throughout.</li>
+            </ul>
+        </field>
+        <field name="deliverables" type="html">
+            <ul>
+                <li>Key visual, master plus three crops.</li>
+                <li>Launch film, 30 and 15 second cuts.</li>
+                <li>Social content set for the first four weeks.</li>
+                <li>OOH for three cities.</li>
+            </ul>
+        </field>
+    </record>
+
+    <!-- Three routes developed against the brief. -->
+    <record id="demo_concept_pehla_qadam" model="c2p.creative.concept">
+        <field name="name">Pehla Qadam</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="tagline">The first step is the whole story.</field>
+        <field name="state">shortlisted</field>
+        <field name="originality">4</field>
+        <field name="brand_fit">5</field>
+        <field name="feasibility">5</field>
+        <field name="rationale" type="html">
+            <p>Saving is not a lifestyle, it is a first step. We open on the smallest
+               possible deposit and treat it as the moment everything changed. The
+               account becomes the step, not the product.</p>
+        </field>
+        <field name="visual_direction" type="html">
+            <p>Documentary-close portraiture, natural light, real interiors. Type sits
+               quietly bottom-left. One warm accent against a neutral palette.</p>
+        </field>
+    </record>
+
+    <record id="demo_concept_kal_ki_tayyari" model="c2p.creative.concept">
+        <field name="name">Kal Ki Tayyari</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="tagline">Getting ready for tomorrow, today.</field>
+        <field name="state">parked</field>
+        <field name="originality">3</field>
+        <field name="brand_fit">4</field>
+        <field name="feasibility">4</field>
+        <field name="rationale" type="html">
+            <p>Frames the account as quiet preparation: the wedding, the shop, the
+               degree. Strong emotionally but close to category convention, which is
+               why it was parked rather than dropped.</p>
+        </field>
+        <field name="visual_direction" type="html">
+            <p>Golden-hour vignettes, shallow depth of field, hand-lettered Urdu
+               headlines.</p>
+        </field>
+    </record>
+
+    <record id="demo_concept_numbers_face" model="c2p.creative.concept">
+        <field name="name">Numbers with a Face</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="tagline">Every figure belongs to someone.</field>
+        <field name="state">shortlisted</field>
+        <field name="originality">5</field>
+        <field name="brand_fit">3</field>
+        <field name="feasibility">4</field>
+        <field name="rationale" type="html">
+            <p>Turns the rate table into people. Each number in the app is rendered as
+               a portrait, so the maths is never abstract. Distinctive device, weaker
+               on brand warmth on its own.</p>
+        </field>
+        <field name="visual_direction" type="html">
+            <p>Editorial grid, oversized numerals, cut-out portraits, high contrast.
+               Motion built on numerals resolving into faces.</p>
+        </field>
+    </record>
+
+    <!-- Routes A and C combined, and that combination is the selected route. -->
+    <record id="demo_concept_combined" model="c2p.creative.concept">
+        <field name="name">Pehla Qadam + Numbers with a Face (combined)</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="tagline">One small step, and the number it becomes.</field>
+        <field name="state">selected</field>
+        <field name="originality">5</field>
+        <field name="brand_fit">5</field>
+        <field name="feasibility">4</field>
+        <field name="source_ids" eval="[(6, 0, [
+            ref('demo_concept_pehla_qadam'),
+            ref('demo_concept_numbers_face')])]"/>
+        <field name="rationale" type="html">
+            <p>Keeps the first-step story of Pehla Qadam as the emotional spine and
+               borrows the numeral-into-portrait device from Numbers with a Face as the
+               campaign's signature. The step is the idea; the number is how we show it
+               adding up.</p>
+        </field>
+        <field name="visual_direction" type="html">
+            <p>Documentary portraiture as the base layer, with the oversized numeral
+               treatment reserved for the pay-off frame in each execution.</p>
+        </field>
+    </record>
+
+    <!-- Four deliverables against the selected route. -->
+    <record id="demo_asset_key_visual" model="c2p.creative.asset">
+        <field name="name">Master Key Visual - Pehla Qadam</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="concept_id" ref="demo_concept_combined"/>
+        <field name="asset_type">key_visual</field>
+        <field name="version">2</field>
+    </record>
+
+    <record id="demo_asset_film" model="c2p.creative.asset">
+        <field name="name">Launch Film - 30 second cut</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="concept_id" ref="demo_concept_combined"/>
+        <field name="asset_type">film</field>
+        <field name="version">1</field>
+    </record>
+
+    <record id="demo_asset_social" model="c2p.creative.asset">
+        <field name="name">Social Set - Week 1 to 4</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="concept_id" ref="demo_concept_combined"/>
+        <field name="asset_type">social</field>
+        <field name="version">1</field>
+    </record>
+
+    <record id="demo_asset_ooh" model="c2p.creative.asset">
+        <field name="name">OOH - Karachi, Lahore, Islamabad</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="concept_id" ref="demo_concept_combined"/>
+        <field name="asset_type">ooh</field>
+        <field name="version">1</field>
+    </record>
+
+    <!-- Review rounds. The key visual went round twice and is approved; the film
+         is back with the designer. Rounds are numbered by the model, not here. -->
+    <record id="demo_review_kv_1" model="c2p.creative.review">
+        <field name="asset_id" ref="demo_asset_key_visual"/>
+        <field name="decision">changes</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html">
+            <p>Idea reads. Crop is too wide and the numeral fights the logo. Tighten to
+               the hands, drop the numeral to the pay-off frame only, and set the rate
+               line at the legal minimum size rather than larger.</p>
+        </field>
+    </record>
+
+    <record id="demo_review_kv_2" model="c2p.creative.review">
+        <field name="asset_id" ref="demo_asset_key_visual"/>
+        <field name="decision">approved</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=4)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html">
+            <p>Approved. Crop and type hierarchy are right. Release to the client with
+               the Urdu line locked.</p>
+        </field>
+    </record>
+
+    <record id="demo_review_film_1" model="c2p.creative.review">
+        <field name="asset_id" ref="demo_asset_film"/>
+        <field name="decision">changes</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html">
+            <p>First twelve seconds are slow. Open on the deposit, not the walk-up.
+               Re-cut and bring the numeral resolve forward to the 20 second mark.</p>
+        </field>
+    </record>
+
+    <!-- The social set is out for review; the OOH is still in progress. -->
+    <function model="c2p.creative.asset" name="write"
+              eval="[[ref('demo_asset_social')], {'state': 'review'}]"/>
+
+    <!-- Attach whichever creatives exist on this database as the designers. -->
+    <function model="c2p.creative.asset" name="_demo_assign_designers"/>
+</odoo>

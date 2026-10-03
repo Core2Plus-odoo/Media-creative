@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_brief_user,c2p.creative.brief user,model_c2p_creative_brief,group_creative_user,1,1,1,0
+access_brief_ad,c2p.creative.brief art director,model_c2p_creative_brief,group_art_director,1,1,1,0
+access_brief_cd,c2p.creative.brief creative director,model_c2p_creative_brief,group_creative_director,1,1,1,1
+access_concept_user,c2p.creative.concept user,model_c2p_creative_concept,group_creative_user,1,1,1,0
+access_concept_ad,c2p.creative.concept art director,model_c2p_creative_concept,group_art_director,1,1,1,0
+access_concept_cd,c2p.creative.concept creative director,model_c2p_creative_concept,group_creative_director,1,1,1,1
+access_asset_user,c2p.creative.asset user,model_c2p_creative_asset,group_creative_user,1,1,1,0
+access_asset_ad,c2p.creative.asset art director,model_c2p_creative_asset,group_art_director,1,1,1,0
+access_asset_cd,c2p.creative.asset creative director,model_c2p_creative_asset,group_creative_director,1,1,1,1
+access_review_user,c2p.creative.review user,model_c2p_creative_review,group_creative_user,1,0,0,0
+access_review_ad,c2p.creative.review art director,model_c2p_creative_review,group_art_director,1,1,1,0
+access_review_cd,c2p.creative.review creative director,model_c2p_creative_review,group_creative_director,1,1,1,1

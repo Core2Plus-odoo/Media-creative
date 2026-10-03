@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_c2p_creative_root" name="Creative Studio" sequence="45"
+              web_icon="c2p_creative_studio,static/description/icon.png"
+              groups="c2p_creative_studio.group_creative_user"/>
+    <menuitem id="menu_c2p_creative_briefs" name="Briefs" parent="menu_c2p_creative_root"
+              action="action_c2p_creative_brief" sequence="10"/>
+    <menuitem id="menu_c2p_creative_concepts" name="Concept Routes" parent="menu_c2p_creative_root"
+              action="action_c2p_creative_concept" sequence="20"/>
+    <menuitem id="menu_c2p_creative_assets" name="Assets" parent="menu_c2p_creative_root"
+              action="action_c2p_creative_asset" sequence="30"/>
+    <menuitem id="menu_c2p_creative_reviews" name="Review Rounds" parent="menu_c2p_creative_root"
+              action="action_c2p_creative_review" sequence="40"
+              groups="c2p_creative_studio.group_art_director"/>
+</odoo>

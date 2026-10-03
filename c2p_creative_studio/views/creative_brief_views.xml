@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_c2p_creative_brief_form" model="ir.ui.view">
+        <field name="name">c2p.creative.brief.form</field>
+        <field name="model">c2p.creative.brief</field>
+        <field name="arch" type="xml">
+            <form string="Creative Brief">
+                <header>
+                    <button name="action_brief" string="Mark as Briefed" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start_concepting" string="Start Concepting" type="object" class="btn-primary"
+                            invisible="state != 'briefed'"/>
+                    <button name="action_send_review" string="Send for Review" type="object" class="btn-primary"
+                            invisible="state != 'concepting'"/>
+                    <button name="action_approve" string="Approve" type="object" class="btn-primary"
+                            invisible="state != 'review'"
+                            groups="c2p_creative_studio.group_creative_director"/>
+                    <button name="action_close" string="Close" type="object"
+                            invisible="state != 'approved'"/>
+                    <button name="action_reset" string="Reset to Draft" type="object"
+                            invisible="state in ('draft', 'closed')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,briefed,concepting,review,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_concepts" type="object" class="oe_stat_button" icon="fa-lightbulb-o">
+                            <field name="concept_count" widget="statinfo" string="Routes"/>
+                        </button>
+                        <button name="action_view_assets" type="object" class="oe_stat_button" icon="fa-picture-o">
+                            <field name="asset_count" widget="statinfo" string="Assets"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Digital Savings Launch"/></h1>
+                        <h3><field name="reference"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="project_id"/>
+                            <field name="art_director_id"/>
+                        </group>
+                        <group>
+                            <field name="deadline"/>
+                            <field name="proposition"/>
+                            <field name="tone"/>
+                            <field name="selected_concept_id"/>
+                            <field name="approval_date" invisible="not approval_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Brief" name="brief">
+                            <group>
+                                <field name="objective"/>
+                                <field name="audience"/>
+                                <field name="mandatories"/>
+                                <field name="deliverables"/>
+                            </group>
+                        </page>
+                        <page string="Concept Routes" name="concepts">
+                            <field name="concept_ids" context="{'default_brief_id': id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="tagline"/>
+                                    <field name="version"/>
+                                    <field name="score"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Assets" name="assets">
+                            <field name="asset_ids" context="{'default_brief_id': id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="asset_type"/>
+                                    <field name="designer_id"/>
+                                    <field name="version"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_c2p_creative_brief_list" model="ir.ui.view">
+        <field name="name">c2p.creative.brief.list</field>
+        <field name="model">c2p.creative.brief</field>
+        <field name="arch" type="xml">
+            <list string="Creative Briefs">
+                <field name="reference"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="art_director_id" widget="many2one_avatar_user"/>
+                <field name="deadline"/>
+                <field name="concept_count"/>
+                <field name="asset_count"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_c2p_creative_brief_kanban" model="ir.ui.view">
+        <field name="name">c2p.creative.brief.kanban</field>
+        <field name="model">c2p.creative.brief</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column" quick_create="false">
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold fs-5"/>
+                        <field name="partner_id"/>
+                        <div class="text-muted small">
+                            <field name="proposition"/>
+                        </div>
+                        <footer>
+                            <field name="deadline" widget="remaining_days"/>
+                            <field name="art_director_id" widget="many2one_avatar_user" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_c2p_creative_brief_search" model="ir.ui.view">
+        <field name="name">c2p.creative.brief.search</field>
+        <field name="model">c2p.creative.brief</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="reference"/>
+                <field name="partner_id"/>
+                <field name="art_director_id"/>
+                <filter name="mine" string="My Briefs" domain="[('art_director_id', '=', uid)]"/>
+                <filter name="open" string="Open" domain="[('state', 'not in', ('approved', 'closed'))]"/>
+                <group>
+                    <filter name="group_client" string="Client" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_state" string="Stage" context="{'group_by': 'state'}"/>
+                    <filter name="group_ad" string="Art Director" context="{'group_by': 'art_director_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_c2p_creative_brief" model="ir.actions.act_window">
+        <field name="name">Creative Briefs</field>
+        <field name="res_model">c2p.creative.brief</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first creative brief</p>
+            <p>Capture the objective, audience and proposition, then develop concept routes against it.</p>
+        </field>
+    </record>
+</odoo>
