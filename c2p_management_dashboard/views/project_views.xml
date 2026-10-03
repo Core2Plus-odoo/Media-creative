@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_form_retainer" model="ir.ui.view">
+        <field name="name">project.project.form.c2p.retainer</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="c2p_is_retainer"/>
+                <field name="c2p_monthly_fee" invisible="not c2p_is_retainer"/>
+            </field>
+        </field>
+    </record>
+</odoo>

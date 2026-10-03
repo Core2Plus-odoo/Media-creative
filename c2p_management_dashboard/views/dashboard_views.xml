@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_c2p_management_dashboard" model="ir.actions.client">
+        <field name="name">Management Dashboard</field>
+        <field name="tag">c2p_management_dashboard</field>
+    </record>
+
+    <menuitem id="menu_c2p_dashboard_root" name="Management" sequence="44"
+              web_icon="c2p_management_dashboard,static/description/icon.png"
+              groups="c2p_management_dashboard.group_dashboard_viewer"/>
+    <menuitem id="menu_c2p_dashboard" name="Dashboard" parent="menu_c2p_dashboard_root"
+              action="action_c2p_management_dashboard" sequence="10"/>
+</odoo>

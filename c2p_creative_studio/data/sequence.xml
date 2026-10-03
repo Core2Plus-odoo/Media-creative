@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_c2p_creative_brief" model="ir.sequence">
+        <field name="name">Creative Brief</field>
+        <field name="code">c2p.creative.brief</field>
+        <field name="prefix">CB/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Only name and implied_ids are set here. The heading these groups sit
+         under, and their help text, are applied from Python afterwards, because
+         Odoo 20 removed res.groups.category_id in favour of a privilege link. -->
+    <record id="group_creative_user" model="res.groups">
+        <field name="name">Creative Studio User</field>
+    </record>
+
+    <record id="group_art_director" model="res.groups">
+        <field name="name">Art Director</field>
+        <field name="implied_ids" eval="[(4, ref('group_creative_user'))]"/>
+    </record>
+
+    <record id="group_creative_director" model="res.groups">
+        <field name="name">Creative Director</field>
+        <field name="implied_ids" eval="[(4, ref('group_art_director'))]"/>
+    </record>
+
+    <function model="res.groups" name="_c2p_describe_groups" eval="[
+        'Creative Studio',
+        {
+            'c2p_creative_studio.group_creative_user':
+                'Works on briefs, routes and assets. Cannot record review decisions or approve a brief.',
+            'c2p_creative_studio.group_art_director':
+                'Art-directs the work: shortlists, selects and combines routes, runs review rounds and requests changes.',
+            'c2p_creative_studio.group_creative_director':
+                'Signs off the creative: approves briefs and may delete records.',
+        },
+    ]"/>
+
+</odoo>

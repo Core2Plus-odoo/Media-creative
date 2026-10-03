@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_c2p_creative_concept_form" model="ir.ui.view">
+        <field name="name">c2p.creative.concept.form</field>
+        <field name="model">c2p.creative.concept</field>
+        <field name="arch" type="xml">
+            <form string="Concept Route">
+                <header>
+                    <button name="action_shortlist" string="Shortlist" type="object" class="btn-primary"
+                            invisible="state != 'idea'"/>
+                    <button name="action_select" string="Select as Route" type="object" class="btn-primary"
+                            invisible="state not in ('idea', 'shortlisted')"/>
+                    <button name="action_refine" string="Refine (New Version)" type="object"/>
+                    <button name="action_park" string="Park" type="object"
+                            invisible="state in ('parked', 'rejected', 'selected')"/>
+                    <button name="action_reject" string="Reject" type="object"
+                            invisible="state in ('rejected', 'selected')"/>
+                    <button name="action_reset" string="Back to Idea" type="object"
+                            invisible="state in ('idea', 'selected')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="idea,shortlisted,selected"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_versions" type="object" class="oe_stat_button"
+                                icon="fa-code-fork" invisible="child_count == 0">
+                            <field name="child_count" widget="statinfo" string="Refinements"/>
+                        </button>
+                    </div>
+                    <field name="moodboard" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Pehla Qadam"/></h1>
+                        <h3><field name="tagline" placeholder="Campaign line"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="brief_id"/>
+                            <field name="author_id"/>
+                            <field name="version"/>
+                            <field name="parent_id"/>
+                            <field name="source_ids" widget="many2many_tags"
+                                   invisible="not source_ids"/>
+                        </group>
+                        <group string="Scoring (1-5)">
+                            <field name="originality"/>
+                            <field name="brand_fit"/>
+                            <field name="feasibility"/>
+                            <field name="score"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Idea &amp; Rationale" name="rationale">
+                            <field name="rationale"/>
+                        </page>
+                        <page string="Visual Direction" name="visual">
+                            <field name="visual_direction"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_c2p_creative_concept_list" model="ir.ui.view">
+        <field name="name">c2p.creative.concept.list</field>
+        <field name="model">c2p.creative.concept</field>
+        <field name="arch" type="xml">
+            <list string="Concept Routes">
+                <header>
+                    <button name="action_combine" type="object" string="Combine Routes"
+                            groups="c2p_creative_studio.group_art_director"/>
+                </header>
+                <field name="brief_id"/>
+                <field name="name"/>
+                <field name="tagline"/>
+                <field name="version"/>
+                <field name="originality"/>
+                <field name="brand_fit"/>
+                <field name="feasibility"/>
+                <field name="score"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_c2p_creative_concept_kanban" model="ir.ui.view">
+        <field name="name">c2p.creative.concept.kanban</field>
+        <field name="model">c2p.creative.concept</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold fs-5"/>
+                        <field name="tagline" class="text-muted"/>
+                        <div class="small">
+                            <field name="brief_id"/>
+                        </div>
+                        <footer>
+                            <span>Score <field name="score"/></span>
+                            <span class="ms-2">v<field name="version"/></span>
+                            <field name="author_id" widget="many2one_avatar_user" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_c2p_creative_concept_search" model="ir.ui.view">
+        <field name="name">c2p.creative.concept.search</field>
+        <field name="model">c2p.creative.concept</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="tagline"/>
+                <field name="brief_id"/>
+                <filter name="selected" string="Selected" domain="[('state', '=', 'selected')]"/>
+                <filter name="live" string="Live Routes" domain="[('state', 'in', ('idea', 'shortlisted', 'selected'))]"/>
+                <group>
+                    <filter name="group_brief" string="Brief" context="{'group_by': 'brief_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_c2p_creative_concept" model="ir.actions.act_window">
+        <field name="name">Concept Routes</field>
+        <field name="res_model">c2p.creative.concept</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_live': 1}</field>
+    </record>
+</odoo>
