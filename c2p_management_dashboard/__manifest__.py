@@ -1,6 +1,6 @@
 {
     'name': 'C2P Management Dashboard',
-    'version': '20.0.1.6.0',
+    'version': '20.0.2.0.0',
     'category': 'Services/Project',
     'summary': 'Agency management dashboard: profitability, utilisation, pipeline, '
                'receivables and creative throughput',

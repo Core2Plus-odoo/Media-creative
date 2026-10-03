@@ -279,6 +279,12 @@ class C2pManagementDashboard(models.AbstractModel):
                 'gross_margin': rev - cost + (media_rebill - media_cost),
             })
         by_client.sort(key=lambda row: row['revenue'], reverse=True)
+        # rank is sent rather than derived in the template, so the league table
+        # holds no arithmetic
+        for position, row in enumerate(by_client, start=1):
+            row['rank'] = position
+        for position, row in enumerate(by_job, start=1):
+            row['rank'] = position
 
         total_revenue = sum(row['revenue'] for row in by_client)
         total_cost = sum(row['cost'] for row in by_client)
