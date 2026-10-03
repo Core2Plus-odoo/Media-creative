@@ -147,6 +147,8 @@
         <field name="concept_id" ref="demo_concept_combined"/>
         <field name="asset_type">social</field>
         <field name="version">1</field>
+        <!-- out for review; the OOH below is still in progress -->
+        <field name="state">review</field>
     </record>
 
     <record id="demo_asset_ooh" model="c2p.creative.asset">
@@ -189,10 +191,6 @@
                Re-cut and bring the numeral resolve forward to the 20 second mark.</p>
         </field>
     </record>
-
-    <!-- The social set is out for review; the OOH is still in progress. -->
-    <function model="c2p.creative.asset" name="write"
-              eval="[[ref('demo_asset_social')], {'state': 'review'}]"/>
 
     <!-- Attach whichever creatives exist on this database as the designers. -->
     <function model="c2p.creative.asset" name="_demo_assign_designers"/>
