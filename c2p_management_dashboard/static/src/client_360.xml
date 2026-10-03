@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="c2p_management_dashboard.Client360">
+    <div class="c2p_dashboard c2p_client360">
+
+        <div class="c2p_topbar">
+            <div class="c2p_topbar_title">
+                <h1>Client 360</h1>
+                <span class="c2p_sub">Everything on one client: money, jobs, invoices and creative.</span>
+            </div>
+            <div class="c2p_filter">
+                <label>Client</label>
+                <select class="c2p_select" t-on-change="(ev) => this.selectClient(ev)">
+                    <option t-foreach="this.state.clients" t-as="client" t-key="client.id"
+                            t-att-value="client.id"
+                            t-att-selected="client.id === this.state.partnerId ? 'selected' : false"
+                            t-esc="client.name"/>
+                </select>
+                <label>From</label>
+                <input type="date" t-att-value="this.state.dateFrom"
+                       t-on-change="(ev) => this.onDateChange('dateFrom', ev)"/>
+                <label>To</label>
+                <input type="date" t-att-value="this.state.dateTo"
+                       t-on-change="(ev) => this.onDateChange('dateTo', ev)"/>
+                <button class="c2p_apply" t-on-click="() => this.applyRange()">Apply</button>
+            </div>
+        </div>
+
+        <div class="c2p_loading" t-if="this.state.loading">Reading records…</div>
+        <div class="c2p_notice c2p_notice_error" t-if="this.state.error">
+            <t t-esc="this.state.error"/>
+        </div>
+        <div class="c2p_notice c2p_notice_demo"
+             t-if="!this.state.loading and !this.state.clients.length">
+            No clients with revenue or creative work in this range.
+        </div>
+
+        <t t-if="!this.state.loading and this.state.data and this.state.data.partner">
+
+            <!-- hero band -->
+            <section class="c2p_hero">
+                <div class="c2p_hero_name">
+                    <span class="c2p_hero_label">Client</span>
+                    <h2 t-esc="this.state.data.partner.name"/>
+                    <span class="c2p_hero_range">
+                        <t t-esc="this.state.data.range.date_from"/> to
+                        <t t-esc="this.state.data.range.date_to"/>
+                    </span>
+                </div>
+                <div class="c2p_hero_figures">
+                    <div class="c2p_hero_figure">
+                        <span class="c2p_hero_fig_label">Revenue</span>
+                        <span class="c2p_hero_fig_value" t-esc="this.money(this.state.data.money.revenue)"/>
+                    </div>
+                    <div class="c2p_hero_figure">
+                        <span class="c2p_hero_fig_label">Timesheet cost</span>
+                        <span class="c2p_hero_fig_value" t-esc="this.money(this.state.data.money.cost)"/>
+                    </div>
+                    <div class="c2p_hero_figure c2p_hero_accent">
+                        <span class="c2p_hero_fig_label">Gross margin</span>
+                        <span class="c2p_hero_fig_value" t-esc="this.money(this.state.data.money.gross_margin)"/>
+                        <span class="c2p_hero_fig_foot" t-esc="this.pct(this.marginPct()) + ' of revenue'"/>
+                    </div>
+                    <div class="c2p_hero_figure">
+                        <span class="c2p_hero_fig_label">Outstanding</span>
+                        <span class="c2p_hero_fig_value" t-esc="this.money(this.state.data.receivables_total)"/>
+                    </div>
+                </div>
+            </section>
+
+            <div class="c2p_kpis">
+                <div class="c2p_kpi">
+                    <span class="c2p_kpi_label">Hours logged</span>
+                    <span class="c2p_kpi_value" t-esc="this.hours(this.state.data.money.hours)"/>
+                </div>
+                <div class="c2p_kpi">
+                    <span class="c2p_kpi_label">Active jobs</span>
+                    <span class="c2p_kpi_value" t-esc="this.state.data.active_jobs.length"/>
+                </div>
+                <div class="c2p_kpi">
+                    <span class="c2p_kpi_label">Briefs</span>
+                    <span class="c2p_kpi_value" t-esc="this.state.data.briefs"/>
+                </div>
+                <div class="c2p_kpi">
+                    <span class="c2p_kpi_label">Open invoices</span>
+                    <span class="c2p_kpi_value" t-esc="this.state.data.open_invoices.length"/>
+                </div>
+                <div class="c2p_kpi">
+                    <span class="c2p_kpi_label">Retainers</span>
+                    <span class="c2p_kpi_value" t-esc="this.state.data.retainers.length"/>
+                </div>
+            </div>
+
+            <div class="c2p_two_col">
+                <section class="c2p_panel">
+                    <header>
+                        <h2>Jobs</h2>
+                        <span class="c2p_sub">Revenue against cost, job by job.</span>
+                    </header>
+                    <table class="c2p_table">
+                        <thead>
+                            <tr><th>Job</th><th class="num">Revenue</th><th class="num">Hours</th>
+                                <th class="num">Cost</th><th class="num">Margin</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="this.state.data.jobs" t-as="job" t-key="job.id">
+                                <td t-esc="job.name"/>
+                                <td class="num" t-esc="this.money(job.revenue)"/>
+                                <td class="num" t-esc="this.hours(job.hours)"/>
+                                <td class="num" t-esc="this.money(job.cost)"/>
+                                <td t-attf-class="num {{ job.gross_margin &lt; 0 ? 'c2p_neg' : '' }}"
+                                    t-esc="this.money(job.gross_margin)"/>
+                                <td>
+                                    <button class="c2p_drill" title="Timesheets"
+                                            t-on-click="() => this.drill('job_timesheets', job.id)">↗</button>
+                                </td>
+                            </tr>
+                            <tr t-if="!this.state.data.jobs.length">
+                                <td colspan="6" class="c2p_empty">No job-level figures in this range.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Active jobs on record</h3>
+                    <table class="c2p_table">
+                        <thead><tr><th>Job</th><th>Type</th><th class="num">Tasks</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="this.state.data.active_jobs" t-as="job" t-key="job.id">
+                                <td t-esc="job.name"/>
+                                <td>
+                                    <span t-if="job.retainer" class="c2p_won">Retainer</span>
+                                    <span t-else="">Project</span>
+                                </td>
+                                <td class="num" t-esc="job.task_count"/>
+                            </tr>
+                            <tr t-if="!this.state.data.active_jobs.length">
+                                <td colspan="3" class="c2p_empty">No jobs on record.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section class="c2p_panel">
+                    <header>
+                        <h2>Money owed</h2>
+                        <span class="c2p_sub">Posted invoices still carrying a balance.</span>
+                    </header>
+                    <table class="c2p_table">
+                        <thead><tr><th>Invoice</th><th>Due</th><th class="num">Outstanding</th><th></th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="this.state.data.open_invoices" t-as="inv" t-key="inv.id">
+                                <td t-esc="inv.name"/>
+                                <td t-attf-class="{{ inv.overdue ? 'c2p_neg' : '' }}" t-esc="inv.date_due || '—'"/>
+                                <td class="num" t-esc="this.money(inv.residual)"/>
+                                <td>
+                                    <button class="c2p_drill" title="Open invoice"
+                                            t-on-click="() => this.drill('overdue_invoice', inv.id)">↗</button>
+                                </td>
+                            </tr>
+                            <tr t-if="!this.state.data.open_invoices.length">
+                                <td colspan="4" class="c2p_empty">Nothing outstanding.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Retainer burn</h3>
+                    <table class="c2p_table">
+                        <thead><tr><th>Retainer</th><th class="num">Fee</th><th class="num">Cost</th><th>Burn</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="this.state.data.retainers" t-as="row" t-key="row.id">
+                                <td t-esc="row.name"/>
+                                <td class="num" t-esc="row.configured ? this.money(row.fee_for_period) : '—'"/>
+                                <td class="num" t-esc="this.money(row.cost)"/>
+                                <td>
+                                    <t t-if="row.configured">
+                                        <span class="c2p_burn">
+                                            <span t-attf-class="c2p_burn_fill {{ row.burn_pct >= 100 ? 'c2p_burn_over' : (row.burn_pct >= 80 ? 'c2p_burn_warn' : '') }}"
+                                                  t-attf-style="width: {{ this.clampPct(row.burn_pct) }}%"/>
+                                            <span class="c2p_burn_mark"/>
+                                        </span>
+                                        <span class="c2p_burn_pct" t-esc="this.pct(row.burn_pct)"/>
+                                    </t>
+                                    <span class="c2p_muted" t-else="">fee not set</span>
+                                </td>
+                            </tr>
+                            <tr t-if="!this.state.data.retainers.length">
+                                <td colspan="4" class="c2p_empty">No retainer on this client.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+
+            <section class="c2p_panel">
+                <header>
+                    <h2>Creative</h2>
+                    <span class="c2p_sub">The most recent art-direction decisions on this client's work.</span>
+                </header>
+                <table class="c2p_table">
+                    <thead><tr><th>Asset</th><th class="num">Round</th><th>Decision</th><th>Date</th><th>Reviewer</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="this.state.data.recent_reviews" t-as="rev" t-key="rev.id">
+                            <td t-esc="rev.asset"/>
+                            <td class="num" t-esc="rev.round"/>
+                            <td>
+                                <span t-attf-class="c2p_decision c2p_decision_{{ rev.decision === 'Approved' ? 'ok' : 'change' }}"
+                                      t-esc="rev.decision"/>
+                            </td>
+                            <td t-esc="rev.date"/>
+                            <td t-esc="rev.reviewer || '—'"/>
+                        </tr>
+                        <tr t-if="!this.state.data.recent_reviews.length">
+                            <td colspan="5" class="c2p_empty">No review rounds yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="c2p_kpi_drill" t-on-click="() => this.drill('briefs')">
+                    Open this client's briefs
+                </button>
+            </section>
+        </t>
+    </div>
+</t>
+
+</templates>

@@ -214,3 +214,88 @@ $c2p-muted: #5C5C5C;
         &:hover { background: $c2p-charcoal; color: #fff; }
     }
 }
+
+// ============================================================================
+// Hero band, client picker and decision badges.
+//
+// The brief asked for something a director would be happy to put on a
+// projector, so the emphasis is on scale and contrast rather than decoration:
+// one very large figure per idea, a hard charcoal band behind it, and the red
+// accent reserved for the number that matters.
+// ============================================================================
+
+.c2p_dashboard {
+
+    .c2p_select {
+        font-family: inherit; font-size: 14px; font-weight: 700;
+        padding: 6px 8px; border: 1px solid $c2p-charcoal; background: $c2p-card;
+        color: $c2p-charcoal; min-width: 200px; cursor: pointer;
+    }
+
+    // ---------------- hero ----------------
+    .c2p_hero {
+        display: flex; flex-wrap: wrap; gap: 28px; align-items: stretch;
+        background: $c2p-charcoal; color: #fff; padding: 26px 28px;
+        margin-bottom: 20px; border-left: 8px solid $c2p-red;
+    }
+    .c2p_hero_name {
+        flex: 1 1 280px; display: flex; flex-direction: column; justify-content: center;
+        h2 { color: #fff; font-size: 34px; line-height: 1.1; margin: 4px 0 6px; }
+    }
+    .c2p_hero_label {
+        font-size: 11px; text-transform: uppercase; letter-spacing: 1.4px; color: $c2p-red;
+        font-weight: 700;
+    }
+    .c2p_hero_range { font-size: 13px; color: #BFBFBF; }
+    .c2p_hero_figures {
+        flex: 2 1 560px; display: grid; gap: 1px; background: #2A2A28;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    .c2p_hero_figure {
+        background: $c2p-charcoal; padding: 12px 16px;
+        display: flex; flex-direction: column; justify-content: center; gap: 3px;
+        &.c2p_hero_accent { background: $c2p-red; }
+    }
+    .c2p_hero_fig_label {
+        font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #C9C9C9;
+    }
+    .c2p_hero_accent .c2p_hero_fig_label { color: #FFD9DD; }
+    .c2p_hero_fig_value {
+        font-size: 27px; font-weight: 700; line-height: 1.1; color: #fff;
+        font-variant-numeric: tabular-nums;
+    }
+    .c2p_hero_fig_foot { font-size: 12px; color: #C9C9C9; }
+    .c2p_hero_accent .c2p_hero_fig_foot { color: #FFE4E7; }
+
+    // ---------------- review decision badges ----------------
+    .c2p_decision {
+        display: inline-block; padding: 2px 8px; font-size: 12px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid transparent;
+    }
+    .c2p_decision_ok { background: #E8F1EA; border-color: #2E6B41; color: #2E6B41; }
+    .c2p_decision_change { background: #FDF1F2; border-color: $c2p-red; color: $c2p-red; }
+
+    // ---------------- a little lift on the panels ----------------
+    .c2p_panel { box-shadow: 0 1px 0 rgba(15, 15, 15, 0.04); }
+    .c2p_panel > header h2 {
+        // thin red rule under each panel title, so sections read as a sequence
+        display: inline-block; padding-bottom: 6px;
+        border-bottom: 3px solid $c2p-red; margin-bottom: -15px;
+    }
+
+    // Larger headline figures: on a projector the KPI row is read from the back
+    // of the room, so these sit well above body scale.
+    .c2p_kpi_value { font-size: 29px; }
+    .c2p_leak_amount { font-size: 46px; }
+
+    // One short reveal on load. prefers-reduced-motion is honoured.
+    .c2p_panel, .c2p_hero, .c2p_kpis { animation: c2p_rise 220ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) {
+        .c2p_panel, .c2p_hero, .c2p_kpis { animation: none; }
+    }
+}
+
+@keyframes c2p_rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}

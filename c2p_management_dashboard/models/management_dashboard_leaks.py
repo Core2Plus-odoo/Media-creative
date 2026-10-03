@@ -245,6 +245,39 @@ class C2pManagementDashboardLeaks(models.AbstractModel):
     # client 360
     # ==================================================================
     @api.model
+    def get_client_list(self, date_from=None, date_to=None):
+        """Clients to offer on the Client 360 page, the biggest billers first.
+
+        Drawn from the same profitability figures the dashboard shows, then
+        topped up with clients that have creative work but no invoiced revenue
+        in the range, so a brief-only client is still reachable.
+        """
+        date_from, date_to = self._coerce_range(date_from, date_to)
+        rows = self._panel_profitability(date_from, date_to)['by_client']
+        clients = [{
+            'id': row['id'],
+            'name': row['name'],
+            'revenue': row['revenue'],
+            'margin': row['gross_margin'],
+            'hours': row['hours'],
+        } for row in rows if row['id']]
+        seen = {client['id'] for client in clients}
+
+        briefs = self.env['c2p.creative.brief'].search(self._company_domain())
+        for partner in briefs.mapped('partner_id.commercial_partner_id'):
+            if partner.id and partner.id not in seen:
+                seen.add(partner.id)
+                clients.append({
+                    'id': partner.id,
+                    'name': partner.display_name,
+                    'revenue': 0.0,
+                    'margin': 0.0,
+                    'hours': 0.0,
+                })
+        return clients
+
+
+    @api.model
     def get_client_360(self, partner_id, date_from=None, date_to=None):
         """One page for one client: money, jobs, retainer burn, recent reviews."""
         date_from, date_to = self._coerce_range(date_from, date_to)
@@ -278,9 +311,11 @@ class C2pManagementDashboardLeaks(models.AbstractModel):
             [('partner_id.commercial_partner_id', '=', partner.id)]
             + self._company_domain())
         decisions = dict(self.env['c2p.creative.review']._fields['decision'].selection)
+        company = self.env.company
         return {
             'partner': {'id': partner.id, 'name': partner.display_name},
             'range': {'date_from': str(date_from), 'date_to': str(date_to)},
+            'currency_symbol': company.currency_id.symbol or company.currency_id.name,
             'money': client_row or {
                 'revenue': 0.0, 'cost': 0.0, 'hours': 0.0,
                 'media_margin': 0.0, 'gross_margin': 0.0,
@@ -361,6 +396,7 @@ class C2pManagementDashboardLeaks(models.AbstractModel):
             'name': _('Opportunity'),
             'res_model': 'crm.lead',
             'res_id': int(lead_id),
+            'views': [[False, 'form']],
             'view_mode': 'form',
             'target': 'current',
         }

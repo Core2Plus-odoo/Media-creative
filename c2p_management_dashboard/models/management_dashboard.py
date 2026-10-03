@@ -635,11 +635,19 @@ class C2pManagementDashboard(models.AbstractModel):
         return builder(record_id, date_from, date_to)
 
     def _act_window(self, name, model, domain, view_mode='list,form', context=None):
+        """Build an act_window the Odoo 20 action service will accept.
+
+        ``views`` is required: the client's _preprocessAction maps over it and
+        does not derive it from ``view_mode``, so a dict carrying only
+        ``view_mode`` fails with "action.views is undefined". ``view_mode`` is
+        kept alongside it because some callers still read it.
+        """
         return {
             'type': 'ir.actions.act_window',
             'name': name,
             'res_model': model,
             'domain': domain,
+            'views': [[False, mode] for mode in view_mode.split(',')],
             'view_mode': view_mode,
             'context': context or {},
             'target': 'current',
@@ -684,6 +692,7 @@ class C2pManagementDashboard(models.AbstractModel):
             'name': _('Invoice'),
             'res_model': 'account.move',
             'res_id': move_id,
+            'views': [[False, 'form']],
             'view_mode': 'form',
             'target': 'current',
         }
