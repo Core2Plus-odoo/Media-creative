@@ -67,6 +67,9 @@ $c2p-muted: #5C5C5C;
         border-left: 5px solid $c2p-red; background: #FDF1F2;
     }
     .c2p_notice_demo { border-left-color: $c2p-charcoal; background: #EFEFEC; }
+    .c2p_notice_error {
+        border-left-color: $c2p-red; background: #FDF1F2; color: $c2p-red; font-weight: 700;
+    }
     .c2p_loading { padding: 32px 0; font-size: 16px; color: $c2p-muted; }
 
     // ---------------- panels ----------------
@@ -169,37 +172,6 @@ $c2p-muted: #5C5C5C;
         width: 2px; background: $c2p-red;
     }
     .c2p_burn_pct { font-size: 13px; font-weight: 700; margin-left: 8px; font-variant-numeric: tabular-nums; }
-
-    // ---------------- receivables ----------------
-    .c2p_receivables { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
-    .c2p_donut_wrap { flex: 0 0 180px; }
-    .c2p_donut { width: 180px; height: 180px; transform: rotate(-90deg); }
-    .c2p_donut_track { fill: none; stroke: #E6E6E2; stroke-width: 18; }
-    .c2p_donut_seg { fill: none; stroke-width: 18; }
-    .c2p_shade_0 { stroke: #BDBDB8; }
-    .c2p_shade_1 { stroke: #7A7A74; }
-    .c2p_shade_2 { stroke: #3D3D3A; }
-    .c2p_shade_3 { stroke: $c2p-charcoal; }
-    .c2p_shade_4 { stroke: $c2p-red; }
-    .c2p_donut_total {
-        transform: rotate(90deg); transform-origin: 70px 70px; text-anchor: middle;
-        font-size: 15px; font-weight: 700; fill: $c2p-charcoal;
-    }
-    .c2p_donut_caption {
-        transform: rotate(90deg); transform-origin: 70px 70px; text-anchor: middle;
-        font-size: 11px; fill: $c2p-muted; text-transform: uppercase; letter-spacing: 1px;
-    }
-    .c2p_ageing { flex: 1 1 420px; }
-    .c2p_ageing_row {
-        display: grid; grid-template-columns: 110px 1fr 140px; gap: 12px;
-        align-items: center; padding: 5px 0; font-size: 14px;
-    }
-    .c2p_ageing_label { color: $c2p-muted; }
-    .c2p_ageing_amount { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
-    .c2p_ageing_total {
-        margin-top: 12px; padding-top: 12px; border-top: 2px solid $c2p-charcoal;
-        font-size: 16px; font-weight: 700;
-    }
 
     // ---------------- client 360 ----------------
     .c2p_overlay {
@@ -369,4 +341,235 @@ $c2p-muted: #5C5C5C;
 
     // The hero band leads, so it should not also carry a section number.
     .c2p_hero { counter-increment: none; }
+}
+
+// ============================================================================
+// Agency layout: command bar, section nav, cover, league table, heat grid,
+// funnels and the ageing stack.
+//
+// Reads top to bottom as a story rather than a pile of tables: the number that
+// matters, the vitals, then the eight sections in the order the brief set out.
+// Everything stays charcoal on light with one red accent, Arial, and sized for
+// a room rather than a desk.
+// ============================================================================
+
+.c2p_dashboard {
+    padding-top: 0;   // the command bar supplies its own
+
+    // ---------------- command bar ----------------
+    .c2p_command {
+        position: sticky; top: 0; z-index: 30;
+        display: flex; flex-wrap: wrap; gap: 20px;
+        align-items: flex-end; justify-content: space-between;
+        background: $c2p-charcoal; color: #fff;
+        margin: 0 -24px 0; padding: 18px 24px 16px;
+        border-bottom: 4px solid $c2p-red;
+    }
+    .c2p_command_brand h1 { color: #fff; font-size: 26px; margin: 2px 0 0; }
+    .c2p_eyebrow {
+        font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+        color: $c2p-red;
+    }
+    .c2p_company { display: block; font-size: 13px; color: #B9B9B6; margin-top: 3px; }
+    .c2p_command_filter { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+    .c2p_presets { display: flex; gap: 0; }
+    .c2p_presets .c2p_preset {
+        background: transparent; color: #D8D8D4; border: 1px solid #3C3C39;
+        margin-left: -1px; padding: 5px 13px; font-size: 12px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.8px; cursor: pointer; font-family: inherit;
+        &:hover { background: #fff; color: $c2p-charcoal; border-color: #fff; }
+    }
+    .c2p_dates {
+        display: flex; align-items: center; gap: 8px;
+        input[type="date"] {
+            font-family: inherit; font-size: 13px; padding: 5px 7px;
+            background: #1C1C1A; color: #fff; border: 1px solid #3C3C39;
+        }
+    }
+    .c2p_dash_sep { color: #8A8A86; }
+
+    // ---------------- section nav ----------------
+    .c2p_nav {
+        position: sticky; top: 92px; z-index: 25;
+        display: flex; flex-wrap: wrap; gap: 0;
+        background: rgba(247, 247, 245, 0.96);
+        margin: 0 -24px 18px; padding: 8px 24px;
+        border-bottom: 1px solid $c2p-rule;
+        backdrop-filter: blur(3px);
+    }
+    .c2p_nav_item {
+        font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.7px;
+        text-transform: uppercase; background: none; border: none; cursor: pointer;
+        color: $c2p-muted; padding: 5px 12px 5px 0; margin-right: 4px;
+        border-bottom: 2px solid transparent;
+        &:hover { color: $c2p-red; border-bottom-color: $c2p-red; }
+    }
+
+    // ---------------- cover ----------------
+    .c2p_cover {
+        display: flex; flex-wrap: wrap; gap: 0; margin: 18px 0 14px;
+        border: 1px solid $c2p-rule; background: $c2p-card;
+    }
+    .c2p_cover_lead {
+        flex: 1 1 340px; background: $c2p-charcoal; color: #fff;
+        padding: 30px 30px 26px; display: flex; flex-direction: column; gap: 6px;
+        border-left: 8px solid $c2p-red;
+    }
+    .c2p_cover_eyebrow {
+        font-size: 12px; font-weight: 700; letter-spacing: 1.6px;
+        text-transform: uppercase; color: #FF8A95;
+    }
+    .c2p_cover_figure {
+        font-size: 54px; font-weight: 700; line-height: 1; letter-spacing: -1px;
+        font-variant-numeric: tabular-nums;
+    }
+    .c2p_cover_sub { font-size: 13px; color: #B9B9B6; }
+    .c2p_cover_cta {
+        align-self: flex-start; margin-top: 10px; font-family: inherit;
+        font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+        background: $c2p-red; color: #fff; border: none; padding: 9px 16px; cursor: pointer;
+        &:hover { background: #fff; color: $c2p-charcoal; }
+    }
+    .c2p_cover_grid {
+        flex: 2 1 520px; display: grid; gap: 1px; background: $c2p-rule;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+    .c2p_cover_cell {
+        background: $c2p-card; padding: 20px 22px;
+        display: flex; flex-direction: column; justify-content: center; gap: 4px;
+    }
+    .c2p_cover_label {
+        font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+        text-transform: uppercase; color: $c2p-muted;
+    }
+    .c2p_cover_value {
+        font-size: 28px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums;
+    }
+    .c2p_cover_foot { font-size: 12px; color: $c2p-muted; }
+
+    // ---------------- leak parts ----------------
+    .c2p_leak_bar {
+        display: block; height: 5px; background: #E6E6E2; margin: 8px 0 6px;
+    }
+    .c2p_leak_bar_fill { display: block; height: 100%; background: $c2p-red; }
+
+    // ---------------- client league ----------------
+    .c2p_league { list-style: none; margin: 0; padding: 0; }
+    .c2p_league_row {
+        display: grid; align-items: center; gap: 14px;
+        grid-template-columns: 34px 44px 1fr 150px 130px 34px;
+        padding: 11px 0; border-bottom: 1px solid $c2p-rule;
+        &:hover { background: $c2p-bg; }
+    }
+    .c2p_rank {
+        font-size: 20px; font-weight: 700; color: $c2p-rule; text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+    .c2p_league_row:first-child .c2p_rank { color: $c2p-red; }
+    .c2p_badge {
+        width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+        background: $c2p-charcoal; color: #fff; font-size: 14px; font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .c2p_league_main { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+    .c2p_league_meta { font-size: 12px; color: $c2p-muted; }
+    .c2p_league_rev {
+        text-align: right; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .c2p_rank_cell { color: $c2p-muted; font-variant-numeric: tabular-nums; }
+
+    // ---------------- retainer burn rows ----------------
+    .c2p_burn_list { display: flex; flex-direction: column; }
+    .c2p_burn_row {
+        display: grid; align-items: center; gap: 14px;
+        grid-template-columns: 1fr 2fr 70px 200px 34px;
+        padding: 12px 0; border-bottom: 1px solid $c2p-rule;
+    }
+    .c2p_burn_name {
+        display: flex; flex-direction: column; font-weight: 700;
+        .c2p_muted { font-weight: 400; font-size: 12px; }
+    }
+    .c2p_burn_track { min-width: 120px; }
+    .c2p_burn_money { text-align: right; font-variant-numeric: tabular-nums; font-size: 14px; }
+
+    // ---------------- utilisation heat grid ----------------
+    .c2p_heat {
+        display: grid; gap: 8px; margin-bottom: 8px;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    .c2p_heat_cell {
+        font-family: inherit; text-align: left; cursor: pointer;
+        border: 1px solid $c2p-rule; border-left-width: 5px;
+        background: $c2p-card; padding: 11px 12px;
+        display: flex; flex-direction: column; gap: 2px;
+        &:hover { border-color: $c2p-charcoal; }
+    }
+    .c2p_heat_pct {
+        font-size: 22px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+    }
+    .c2p_heat_name { font-size: 13px; font-weight: 700; }
+    .c2p_heat_dept, .c2p_heat_hours { font-size: 11px; color: $c2p-muted; }
+    .c2p_heat_low { border-left-color: #E08A00; background: #FFF8EC; }
+    .c2p_heat_mid { border-left-color: #B8B8B3; }
+    .c2p_heat_good { border-left-color: $c2p-charcoal; }
+    .c2p_heat_over { border-left-color: $c2p-red; background: #FDF1F2; }
+
+    // ---------------- funnels ----------------
+    .c2p_funnel { display: flex; flex-direction: column; gap: 6px; }
+    .c2p_funnel_row {
+        font-family: inherit; text-align: left; cursor: pointer; background: none;
+        border: none; border-bottom: 1px solid $c2p-rule; padding: 8px 0;
+        display: grid; align-items: center; gap: 14px;
+        grid-template-columns: 200px 1fr 150px;
+        &:hover .c2p_funnel_bar { background: $c2p-red; }
+    }
+    .c2p_funnel_label {
+        display: flex; flex-direction: column; font-size: 14px; font-weight: 700;
+        .c2p_muted { font-weight: 400; font-size: 12px; }
+    }
+    .c2p_funnel_bar {
+        display: flex; align-items: center; justify-content: flex-end;
+        background: $c2p-charcoal; color: #fff; height: 30px; padding: 0 10px;
+        transition: background 120ms ease-out, width 300ms ease-out;
+        min-width: 60px;
+    }
+    .c2p_funnel_value { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .c2p_funnel_weighted { font-size: 12px; color: $c2p-muted; text-align: right; }
+
+    // ---------------- ageing stack ----------------
+    .c2p_stack_wrap { margin-bottom: 8px; }
+    .c2p_stack {
+        display: flex; height: 34px; background: #E6E6E2; overflow: hidden;
+        border: 1px solid $c2p-rule;
+    }
+    .c2p_stack_seg { display: block; height: 100%; }
+    .c2p_stack_not_due { background: #BDBDB8; }
+    .c2p_stack_b1_30 { background: #8E8E88; }
+    .c2p_stack_b31_60 { background: #5A5A55; }
+    .c2p_stack_b61_90 { background: $c2p-charcoal; }
+    .c2p_stack_b90_plus { background: $c2p-red; }
+    .c2p_stack_legend {
+        display: flex; flex-wrap: wrap; gap: 18px; margin-top: 12px;
+    }
+    .c2p_stack_key { display: flex; align-items: center; gap: 7px; font-size: 13px; }
+    .c2p_swatch { width: 13px; height: 13px; display: inline-block; }
+    .c2p_stack_label { color: $c2p-muted; }
+    .c2p_stack_amount { font-weight: 700; font-variant-numeric: tabular-nums; }
+    .c2p_stack_total {
+        margin-top: 14px; padding-top: 12px; border-top: 2px solid $c2p-charcoal;
+        font-size: 17px; font-weight: 700;
+    }
+
+    .c2p_week_label {
+        font-size: 13px; font-weight: 700; margin: 16px 0 6px; color: $c2p-muted;
+    }
+
+    // Narrow screens: let the grids fall back to stacked rows.
+    @media (max-width: 820px) {
+        .c2p_league_row { grid-template-columns: 28px 36px 1fr; row-gap: 6px; }
+        .c2p_league_rev, .c2p_chip, .c2p_drill { grid-column: 3; justify-self: start; }
+        .c2p_burn_row { grid-template-columns: 1fr; }
+        .c2p_funnel_row { grid-template-columns: 1fr; }
+        .c2p_nav { top: 128px; }
+    }
 }

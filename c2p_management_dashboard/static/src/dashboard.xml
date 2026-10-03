@@ -4,33 +4,42 @@
 <t t-name="c2p_management_dashboard.Dashboard">
     <div class="c2p_dashboard h-100 overflow-auto">
 
-        <div class="c2p_topbar">
-            <div class="c2p_topbar_title">
-                <h1>Management Dashboard</h1>
-                <span class="c2p_companies" t-if="this.state.data">
-                    <t t-esc="this.state.data.companies.join(', ')"/>
-                </span>
+        <!-- ================= command bar, sticky ================= -->
+        <header class="c2p_command">
+            <div class="c2p_command_brand">
+                <span class="c2p_eyebrow">Management</span>
+                <h1>Agency Dashboard</h1>
+                <span class="c2p_company" t-if="this.state.data"
+                      t-esc="this.state.data.companies.join(' · ')"/>
             </div>
-            <div class="c2p_filter">
-                <button class="c2p_preset" t-on-click="() => this.setPreset('month')">This month</button>
-                <button class="c2p_preset" t-on-click="() => this.setPreset('quarter')">Last 3 months</button>
-                <button class="c2p_preset" t-on-click="() => this.setPreset('year')">Year to date</button>
-                <label>From</label>
-                <input type="date" t-att-value="this.state.dateFrom"
-                       t-on-change="(ev) => this.onDateChange('dateFrom', ev)"/>
-                <label>To</label>
-                <input type="date" t-att-value="this.state.dateTo"
-                       t-on-change="(ev) => this.onDateChange('dateTo', ev)"/>
-                <button class="c2p_apply" t-on-click="() => this.applyRange()">Apply</button>
+            <div class="c2p_command_filter">
+                <div class="c2p_presets">
+                    <button class="c2p_preset" t-on-click="() => this.setPreset('month')">Month</button>
+                    <button class="c2p_preset" t-on-click="() => this.setPreset('quarter')">Quarter</button>
+                    <button class="c2p_preset" t-on-click="() => this.setPreset('year')">YTD</button>
+                </div>
+                <div class="c2p_dates">
+                    <input type="date" t-att-value="this.state.dateFrom"
+                           t-on-change="(ev) => this.onDateChange('dateFrom', ev)"/>
+                    <span class="c2p_dash_sep">–</span>
+                    <input type="date" t-att-value="this.state.dateTo"
+                           t-on-change="(ev) => this.onDateChange('dateTo', ev)"/>
+                    <button class="c2p_apply" t-on-click="() => this.applyRange()">Apply</button>
+                </div>
             </div>
-        </div>
+        </header>
+
+        <!-- ================= section nav, sticky ================= -->
+        <nav class="c2p_nav" t-if="!this.state.loading and this.state.data">
+            <button class="c2p_nav_item" t-foreach="this.sections" t-as="section" t-key="section.id"
+                    t-on-click="() => this.jumpTo(section.id)" t-esc="section.label"/>
+        </nav>
 
         <div class="c2p_notice c2p_notice_demo"
              t-if="this.state.data and (this.state.data.demo_data or this.state.data.seeded_records)">
             <strong>Seeded data.</strong>
-            This database contains seeded demonstration records. Every figure below is
-            read from real records, but those records were seeded for the demo rather
-            than produced by actual trading activity.
+            Every figure is read from real records, but those records were seeded for
+            this demo rather than produced by trading activity.
         </div>
 
         <div class="c2p_loading" t-if="this.state.loading">Reading records…</div>
@@ -40,303 +49,249 @@
 
         <t t-if="!this.state.loading and this.state.data">
 
-            <!-- Headline band: the four numbers she opens the screen for. -->
-            <section class="c2p_hero">
-                <div class="c2p_hero_name">
-                    <span class="c2p_hero_label">Period</span>
-                    <h2>
-                        <t t-esc="this.state.data.range.date_from"/> –
+            <!-- ================= cover ================= -->
+            <section class="c2p_cover">
+                <div class="c2p_cover_lead">
+                    <span class="c2p_cover_eyebrow">Margin at risk this period</span>
+                    <span class="c2p_cover_figure"
+                          t-esc="this.money(this.state.data.margin_leaks.headline)"/>
+                    <span class="c2p_cover_sub">
+                        <t t-esc="this.state.data.range.date_from"/> to
                         <t t-esc="this.state.data.range.date_to"/>
-                    </h2>
-                    <span class="c2p_hero_range" t-esc="this.state.data.companies.join(', ')"/>
+                    </span>
+                    <button class="c2p_cover_cta" t-on-click="() => this.jumpTo('c2p_s_leaks')">
+                        See where it is going
+                    </button>
                 </div>
-                <div class="c2p_hero_figures">
-                    <div class="c2p_hero_figure">
-                        <span class="c2p_hero_fig_label">Revenue</span>
-                        <span class="c2p_hero_fig_value"
+                <div class="c2p_cover_grid">
+                    <div class="c2p_cover_cell">
+                        <span class="c2p_cover_label">Revenue</span>
+                        <span class="c2p_cover_value"
                               t-esc="this.money(this.state.data.profitability.totals.revenue)"/>
                     </div>
-                    <div class="c2p_hero_figure">
-                        <span class="c2p_hero_fig_label">Gross margin</span>
-                        <span class="c2p_hero_fig_value"
+                    <div class="c2p_cover_cell">
+                        <span class="c2p_cover_label">Gross margin</span>
+                        <span class="c2p_cover_value"
                               t-esc="this.money(this.state.data.profitability.totals.gross_margin)"/>
-                        <span class="c2p_hero_fig_foot"
+                        <span class="c2p_cover_foot"
                               t-esc="this.pct(this.state.data.profitability.totals.margin_pct) + ' of revenue'"/>
                     </div>
-                    <div class="c2p_hero_figure">
-                        <span class="c2p_hero_fig_label">Hours logged</span>
-                        <span class="c2p_hero_fig_value"
-                              t-esc="this.hours(this.state.data.profitability.totals.hours)"/>
+                    <div class="c2p_cover_cell">
+                        <span class="c2p_cover_label">Studio cost</span>
+                        <span class="c2p_cover_value"
+                              t-esc="this.money(this.state.data.profitability.totals.cost)"/>
+                        <span class="c2p_cover_foot"
+                              t-esc="this.hours(this.state.data.profitability.totals.hours) + ' logged'"/>
                     </div>
-                    <div class="c2p_hero_figure c2p_hero_accent">
-                        <span class="c2p_hero_fig_label">At risk</span>
-                        <span class="c2p_hero_fig_value"
-                              t-esc="this.money(this.state.data.margin_leaks.headline)"/>
-                        <span class="c2p_hero_fig_foot">margin leaking</span>
+                    <div class="c2p_cover_cell">
+                        <span class="c2p_cover_label">Weighted pipeline</span>
+                        <span class="c2p_cover_value"
+                              t-esc="this.money(this.state.data.pipeline.totals.weighted)"/>
+                        <span class="c2p_cover_foot">
+                            <t t-esc="this.state.data.pipeline.totals.count"/> open opportunities
+                        </span>
                     </div>
                 </div>
             </section>
 
-            <!-- Three rings: the health of the business in one glance. -->
+            <!-- ================= vitals ================= -->
             <section class="c2p_rings">
                 <div class="c2p_ring_card">
-                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img"
-                         aria-label="Gross margin as a share of revenue">
+                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img" aria-label="Gross margin">
                         <circle cx="50" cy="50" r="42" class="c2p_ring_track"/>
                         <circle cx="50" cy="50" r="42"
                                 t-attf-class="c2p_ring_fill {{ this.ringTone(this.state.data.profitability.totals.margin_pct) }}"
                                 t-att-stroke-dasharray="this.ringDash(this.state.data.profitability.totals.margin_pct)"/>
                     </svg>
                     <div class="c2p_ring_meta">
-                        <span class="c2p_ring_value"
-                              t-esc="this.pct(this.state.data.profitability.totals.margin_pct)"/>
+                        <span class="c2p_ring_value" t-esc="this.pct(this.state.data.profitability.totals.margin_pct)"/>
                         <span class="c2p_ring_label">Gross margin</span>
                         <span class="c2p_ring_foot">of invoiced revenue</span>
                     </div>
                 </div>
                 <div class="c2p_ring_card">
-                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img"
-                         aria-label="Utilisation against calendar capacity">
+                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img" aria-label="Utilisation">
                         <circle cx="50" cy="50" r="42" class="c2p_ring_track"/>
                         <circle cx="50" cy="50" r="42"
                                 t-attf-class="c2p_ring_fill {{ this.ringTone(this.state.data.utilisation.totals.utilisation_pct) }}"
                                 t-att-stroke-dasharray="this.ringDash(this.state.data.utilisation.totals.utilisation_pct)"/>
                     </svg>
                     <div class="c2p_ring_meta">
-                        <span class="c2p_ring_value"
-                              t-esc="this.pct(this.state.data.utilisation.totals.utilisation_pct)"/>
+                        <span class="c2p_ring_value" t-esc="this.pct(this.state.data.utilisation.totals.utilisation_pct)"/>
                         <span class="c2p_ring_label">Utilisation</span>
                         <span class="c2p_ring_foot">logged against capacity</span>
                     </div>
                 </div>
                 <div class="c2p_ring_card">
-                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img"
-                         aria-label="Overdue share of open receivables">
+                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img" aria-label="Overdue receivables">
                         <circle cx="50" cy="50" r="42" class="c2p_ring_track"/>
                         <circle cx="50" cy="50" r="42"
                                 t-attf-class="c2p_ring_fill {{ this.ringTone(this.state.data.receivables.totals.overdue_pct, true) }}"
                                 t-att-stroke-dasharray="this.ringDash(this.state.data.receivables.totals.overdue_pct)"/>
                     </svg>
                     <div class="c2p_ring_meta">
-                        <span class="c2p_ring_value"
-                              t-esc="this.pct(this.state.data.receivables.totals.overdue_pct)"/>
+                        <span class="c2p_ring_value" t-esc="this.pct(this.state.data.receivables.totals.overdue_pct)"/>
                         <span class="c2p_ring_label">Overdue</span>
                         <span class="c2p_ring_foot">of open receivables</span>
                     </div>
                 </div>
                 <div class="c2p_ring_card">
-                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img"
-                         aria-label="Pipeline win rate">
+                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img" aria-label="Win rate">
                         <circle cx="50" cy="50" r="42" class="c2p_ring_track"/>
                         <circle cx="50" cy="50" r="42"
                                 t-attf-class="c2p_ring_fill {{ this.ringTone(this.state.data.pipeline.totals.win_rate_pct) }}"
                                 t-att-stroke-dasharray="this.ringDash(this.state.data.pipeline.totals.win_rate_pct)"/>
                     </svg>
                     <div class="c2p_ring_meta">
-                        <span class="c2p_ring_value"
-                              t-esc="this.pct(this.state.data.pipeline.totals.win_rate_pct)"/>
+                        <span class="c2p_ring_value" t-esc="this.pct(this.state.data.pipeline.totals.win_rate_pct)"/>
                         <span class="c2p_ring_label">Win rate</span>
                         <span class="c2p_ring_foot">won against decided</span>
                     </div>
                 </div>
             </section>
 
-            <!-- 1. Where margin leaks -->
-            <section class="c2p_panel c2p_panel_leak">
+            <!-- ================= 01 margin leaks ================= -->
+            <section class="c2p_panel c2p_panel_leak" id="c2p_s_leaks">
                 <header>
                     <h2>Where margin leaks</h2>
-                    <span class="c2p_sub">Four conversations, one number. Click any part to see the records.</span>
+                    <span class="c2p_sub">Four conversations, one number. Each part opens the records behind it.</span>
                 </header>
-                <div class="c2p_leak_body">
-                    <div class="c2p_leak_headline">
-                        <span class="c2p_leak_amount" t-esc="this.money(this.state.data.margin_leaks.headline)"/>
-                        <span class="c2p_leak_caption">at risk in this period</span>
-                    </div>
-                    <div class="c2p_leak_parts">
-                        <button class="c2p_leak_part" t-foreach="this.state.data.margin_leaks.parts" t-as="part"
-                                t-key="part.key" t-on-click="() => this.drill(part.drill)">
-                            <span class="c2p_leak_part_amount" t-esc="this.money(part.amount)"/>
-                            <span class="c2p_leak_part_label" t-esc="part.label"/>
-                            <span class="c2p_leak_part_detail" t-esc="part.detail"/>
-                        </button>
-                    </div>
+                <div class="c2p_leak_parts">
+                    <button class="c2p_leak_part" t-foreach="this.state.data.margin_leaks.parts" t-as="part"
+                            t-key="part.key" t-on-click="() => this.drill(part.drill)">
+                        <span class="c2p_leak_part_amount" t-esc="this.money(part.amount)"/>
+                        <span class="c2p_leak_bar">
+                            <span class="c2p_leak_bar_fill"
+                                  t-attf-style="width: {{ this.shareOf(part.amount, this.state.data.margin_leaks.headline) }}%"/>
+                        </span>
+                        <span class="c2p_leak_part_label" t-esc="part.label"/>
+                        <span class="c2p_leak_part_detail" t-esc="part.detail"/>
+                    </button>
                 </div>
             </section>
 
-            <!-- 2. Profitability -->
-            <section class="c2p_panel">
+            <!-- ================= 02 profitability ================= -->
+            <section class="c2p_panel" id="c2p_s_profit">
                 <header>
                     <h2>Profitability</h2>
                     <span class="c2p_sub">Invoiced revenue against timesheet cost (hours × hourly cost) and media pass-through margin.</span>
                 </header>
-                <div class="c2p_kpis">
-                    <div class="c2p_kpi">
-                        <span class="c2p_kpi_label">Revenue</span>
-                        <span class="c2p_kpi_value" t-esc="this.money(this.state.data.profitability.totals.revenue)"/>
-                    </div>
-                    <div class="c2p_kpi">
-                        <span class="c2p_kpi_label">Timesheet cost</span>
-                        <span class="c2p_kpi_value" t-esc="this.money(this.state.data.profitability.totals.cost)"/>
-                    </div>
-                    <div class="c2p_kpi">
-                        <span class="c2p_kpi_label">Media margin</span>
-                        <span class="c2p_kpi_value" t-esc="this.money(this.state.data.profitability.totals.media_margin)"/>
-                    </div>
-                    <div class="c2p_kpi c2p_kpi_accent">
-                        <span class="c2p_kpi_label">Gross margin</span>
-                        <span class="c2p_kpi_value" t-esc="this.money(this.state.data.profitability.totals.gross_margin)"/>
-                        <span class="c2p_kpi_foot" t-esc="this.pct(this.state.data.profitability.totals.margin_pct) + ' of revenue'"/>
-                    </div>
-                    <div class="c2p_kpi">
-                        <span class="c2p_kpi_label">Hours logged</span>
-                        <span class="c2p_kpi_value" t-esc="this.hours(this.state.data.profitability.totals.hours)"/>
-                    </div>
-                </div>
 
                 <p class="c2p_footnote" t-if="!this.state.data.profitability.notes.media_available">
                     Media pass-through is not shown: Purchase is not installed on this database.
                 </p>
                 <p class="c2p_footnote" t-if="this.state.data.profitability.notes.revenue_unattributed_to_project">
                     <t t-esc="this.money(this.state.data.profitability.notes.revenue_unattributed_to_project)"/>
-                    of revenue could not be traced to a job and is counted at client level only.
+                    of revenue could not be traced to a job and counts at client level only.
                 </p>
 
-                <div class="c2p_two_col">
-                    <div>
-                        <h3>By client</h3>
-                        <table class="c2p_table">
-                            <thead>
-                                <tr>
-                                    <th>Client</th><th class="num">Revenue</th>
-                                    <th class="num">Cost</th><th class="num">Margin</th>
-                                    <th class="num">Margin</th><th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach="this.state.data.profitability.by_client" t-as="row" t-key="row.id">
-                                    <td>
-                                        <button class="c2p_link" t-on-click="() => this.openClient360(row.id)"
-                                                t-esc="row.name"/>
-                                    </td>
-                                    <td class="num" t-esc="this.money(row.revenue)"/>
-                                    <td class="num" t-esc="this.money(row.cost)"/>
-                                    <td class="num">
-                                        <span t-attf-class="c2p_chip {{ row.gross_margin &lt; 0 ? 'c2p_chip_bad' : 'c2p_chip_good' }}"
-                                              t-esc="this.money(row.gross_margin)"/>
-                                    </td>
-                                    <td class="num">
-                                        <span class="c2p_bar">
-                                            <span class="c2p_bar_fill"
-                                                  t-attf-style="width: {{ this.barWidth(row.gross_margin, this.state.data.profitability.by_client, 'gross_margin') }}%"/>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="c2p_drill" title="Invoiced revenue"
-                                                t-on-click="() => this.drill('client_revenue', row.id)">↗</button>
-                                    </td>
-                                </tr>
-                                <tr t-if="!this.state.data.profitability.by_client.length">
-                                    <td colspan="6" class="c2p_empty">No invoiced revenue or booked cost in this range.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                        <h3>By job</h3>
-                        <table class="c2p_table">
-                            <thead>
-                                <tr>
-                                    <th>Job</th><th class="num">Revenue</th>
-                                    <th class="num">Hours</th><th class="num">Cost</th>
-                                    <th class="num">Margin</th><th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach="this.state.data.profitability.by_job" t-as="row" t-key="row.id">
-                                    <td>
-                                        <span t-esc="row.name"/>
-                                        <span class="c2p_muted" t-if="row.partner" t-esc="' · ' + row.partner"/>
-                                    </td>
-                                    <td class="num" t-esc="this.money(row.revenue)"/>
-                                    <td class="num" t-esc="this.hours(row.hours)"/>
-                                    <td class="num" t-esc="this.money(row.cost)"/>
-                                    <td t-attf-class="num {{ row.gross_margin &lt; 0 ? 'c2p_neg' : '' }}"
-                                        t-esc="this.money(row.gross_margin)"/>
-                                    <td>
-                                        <button class="c2p_drill" title="Timesheets"
-                                                t-on-click="() => this.drill('job_timesheets', row.id)">↗</button>
-                                    </td>
-                                </tr>
-                                <tr t-if="!this.state.data.profitability.by_job.length">
-                                    <td colspan="6" class="c2p_empty">No job-level activity in this range.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+                <h3>Client league</h3>
+                <ol class="c2p_league">
+                    <li class="c2p_league_row" t-foreach="this.state.data.profitability.by_client"
+                        t-as="row" t-key="row.id">
+                        <span class="c2p_rank" t-esc="row.rank"/>
+                        <span class="c2p_badge" t-esc="this.initials(row.name)"/>
+                        <div class="c2p_league_main">
+                            <button class="c2p_link" t-on-click="() => this.openClient360(row.id)"
+                                    t-esc="row.name"/>
+                            <span class="c2p_bar">
+                                <span class="c2p_bar_fill"
+                                      t-attf-style="width: {{ this.shareOf(row.revenue, this.state.data.profitability.totals.revenue) }}%"/>
+                            </span>
+                            <span class="c2p_league_meta">
+                                <t t-esc="this.hours(row.hours)"/> ·
+                                cost <t t-esc="this.money(row.cost)"/>
+                            </span>
+                        </div>
+                        <span class="c2p_league_rev" t-esc="this.money(row.revenue)"/>
+                        <span t-attf-class="c2p_chip {{ row.gross_margin &lt; 0 ? 'c2p_chip_bad' : 'c2p_chip_good' }}"
+                              t-esc="this.money(row.gross_margin)"/>
+                        <button class="c2p_drill" title="Invoiced revenue"
+                                t-on-click="() => this.drill('client_revenue', row.id)">↗</button>
+                    </li>
+                    <li class="c2p_empty" t-if="!this.state.data.profitability.by_client.length">
+                        No invoiced revenue or booked cost in this range.
+                    </li>
+                </ol>
 
-            <!-- 3. Retainer burn -->
-            <section class="c2p_panel">
-                <header>
-                    <h2>Retainer burn</h2>
-                    <span class="c2p_sub">
-                        Cost consumed against the monthly fee ·
-                        <t t-esc="this.state.data.retainers.months_in_range"/> month(s) in range
-                    </span>
-                </header>
+                <h3>By job</h3>
                 <table class="c2p_table">
                     <thead>
-                        <tr>
-                            <th>Retainer</th><th class="num">Fee for period</th>
-                            <th class="num">Cost</th><th class="num">Hours</th>
-                            <th>Burn</th><th></th>
-                        </tr>
+                        <tr><th>#</th><th>Job</th><th class="num">Revenue</th><th class="num">Hours</th>
+                            <th class="num">Cost</th><th class="num">Margin</th><th></th></tr>
                     </thead>
                     <tbody>
-                        <tr t-foreach="this.state.data.retainers.rows" t-as="row" t-key="row.id">
+                        <tr t-foreach="this.state.data.profitability.by_job" t-as="row" t-key="row.id">
+                            <td class="c2p_rank_cell" t-esc="row.rank"/>
                             <td>
                                 <span t-esc="row.name"/>
                                 <span class="c2p_muted" t-if="row.partner" t-esc="' · ' + row.partner"/>
                             </td>
-                            <td class="num" t-esc="row.configured ? this.money(row.fee_for_period) : '—'"/>
-                            <td class="num" t-esc="this.money(row.cost)"/>
+                            <td class="num" t-esc="this.money(row.revenue)"/>
                             <td class="num" t-esc="this.hours(row.hours)"/>
-                            <td>
-                                <t t-if="row.configured">
-                                    <span class="c2p_burn">
-                                        <span t-attf-class="c2p_burn_fill {{ row.burn_pct >= 100 ? 'c2p_burn_over' : (row.burn_pct >= 80 ? 'c2p_burn_warn' : '') }}"
-                                              t-attf-style="width: {{ this.clampPct(row.burn_pct) }}%"/>
-                                        <span class="c2p_burn_mark"/>
-                                    </span>
-                                    <span class="c2p_burn_pct" t-esc="this.pct(row.burn_pct)"/>
-                                </t>
-                                <span class="c2p_muted" t-else="">fee not set</span>
+                            <td class="num" t-esc="this.money(row.cost)"/>
+                            <td class="num">
+                                <span t-attf-class="c2p_chip {{ row.gross_margin &lt; 0 ? 'c2p_chip_bad' : 'c2p_chip_good' }}"
+                                      t-esc="this.money(row.gross_margin)"/>
                             </td>
                             <td>
                                 <button class="c2p_drill" title="Timesheets"
                                         t-on-click="() => this.drill('job_timesheets', row.id)">↗</button>
                             </td>
                         </tr>
-                        <tr t-if="!this.state.data.retainers.rows.length">
-                            <td colspan="6" class="c2p_empty">
-                                No job is marked as a retainer yet. Tick "Retainer" on a project and
-                                set its monthly fee.
-                            </td>
+                        <tr t-if="!this.state.data.profitability.by_job.length">
+                            <td colspan="7" class="c2p_empty">No job-level activity in this range.</td>
                         </tr>
                     </tbody>
                 </table>
-                <p class="c2p_footnote" t-if="this.state.data.retainers.unconfigured.length">
-                    Burn cannot be computed for: <t t-esc="this.state.data.retainers.unconfigured.join(', ')"/>
-                    — no monthly fee recorded on the project.
-                </p>
             </section>
 
-            <!-- 4. Utilisation -->
-            <section class="c2p_panel">
+            <!-- ================= 03 retainers ================= -->
+            <section class="c2p_panel" id="c2p_s_retainers">
+                <header>
+                    <h2>Retainer burn</h2>
+                    <span class="c2p_sub">
+                        Cost consumed against the monthly fee ·
+                        <t t-esc="this.state.data.retainers.months_in_range"/> month(s) in range ·
+                        the red line marks 80%, where the alert fires
+                    </span>
+                </header>
+                <div class="c2p_burn_list">
+                    <div class="c2p_burn_row" t-foreach="this.state.data.retainers.rows" t-as="row" t-key="row.id">
+                        <div class="c2p_burn_name">
+                            <span t-esc="row.name"/>
+                            <span class="c2p_muted" t-if="row.partner" t-esc="row.partner"/>
+                        </div>
+                        <div class="c2p_burn_track">
+                            <t t-if="row.configured">
+                                <span class="c2p_burn">
+                                    <span t-attf-class="c2p_burn_fill {{ row.burn_pct >= 100 ? 'c2p_burn_over' : (row.burn_pct >= 80 ? 'c2p_burn_warn' : '') }}"
+                                          t-attf-style="width: {{ this.clampPct(row.burn_pct) }}%"/>
+                                    <span class="c2p_burn_mark"/>
+                                </span>
+                            </t>
+                            <span class="c2p_muted" t-else="">no monthly fee recorded on this project</span>
+                        </div>
+                        <span class="c2p_burn_pct" t-esc="row.configured ? this.pct(row.burn_pct) : '—'"/>
+                        <span class="c2p_burn_money">
+                            <t t-esc="this.money(row.cost)"/>
+                            <span class="c2p_muted" t-if="row.configured"
+                                  t-esc="' of ' + this.money(row.fee_for_period)"/>
+                        </span>
+                        <button class="c2p_drill" title="Timesheets"
+                                t-on-click="() => this.drill('job_timesheets', row.id)">↗</button>
+                    </div>
+                    <p class="c2p_empty" t-if="!this.state.data.retainers.rows.length">
+                        No job is marked as a retainer yet. Tick "Retainer" on a project and set its monthly fee.
+                    </p>
+                </div>
+            </section>
+
+            <!-- ================= 04 utilisation ================= -->
+            <section class="c2p_panel" id="c2p_s_util">
                 <header>
                     <h2>Utilisation</h2>
-                    <span class="c2p_sub">Logged against planned against calendar capacity.</span>
+                    <span class="c2p_sub">Logged against calendar capacity. Amber is under-used, red is over.</span>
                 </header>
                 <div class="c2p_kpis">
                     <div class="c2p_kpi">
@@ -356,106 +311,85 @@
                         <span class="c2p_kpi_value" t-esc="this.pct(this.state.data.utilisation.totals.utilisation_pct)"/>
                     </div>
                 </div>
-                <div class="c2p_two_col">
-                    <div>
-                        <h3>By employee</h3>
+
+                <h3>The studio, person by person</h3>
+                <div class="c2p_heat">
+                    <button t-attf-class="c2p_heat_cell {{ this.heatTone(row.utilisation_pct) }}"
+                            t-foreach="this.state.data.utilisation.by_employee" t-as="row" t-key="row.id"
+                            t-on-click="() => this.drill('employee_timesheets', row.id)">
+                        <span class="c2p_heat_pct" t-esc="this.pct(row.utilisation_pct)"/>
+                        <span class="c2p_heat_name" t-esc="row.name"/>
+                        <span class="c2p_heat_dept" t-esc="row.department"/>
+                        <span class="c2p_heat_hours">
+                            <t t-esc="this.hours(row.logged)"/> / <t t-esc="this.hours(row.capacity)"/>
+                        </span>
+                    </button>
+                    <p class="c2p_empty" t-if="!this.state.data.utilisation.by_employee.length">
+                        No logged, planned or contracted hours in this range.
+                    </p>
+                </div>
+
+                <h3>By department</h3>
+                <table class="c2p_table">
+                    <thead><tr><th>Department</th><th class="num">Logged</th><th class="num">Capacity</th><th>Utilisation</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="this.state.data.utilisation.by_department" t-as="row" t-key="row.id">
+                            <td t-esc="row.name"/>
+                            <td class="num" t-esc="this.hours(row.logged)"/>
+                            <td class="num" t-esc="this.hours(row.capacity)"/>
+                            <td>
+                                <span class="c2p_bar">
+                                    <span class="c2p_bar_fill"
+                                          t-attf-style="width: {{ this.clampPct(row.utilisation_pct) }}%"/>
+                                </span>
+                                <span class="c2p_burn_pct" t-esc="this.pct(row.utilisation_pct)"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="c2p_footnote" t-if="!this.state.data.utilisation.notes.planning_available">
+                    Planned hours are blank: Planning is not installed on this database.
+                </p>
+
+                <t t-if="this.state.data.overbooking.available and this.state.data.overbooking.overbooked_count">
+                    <h3>Overbooked, with a free peer to move work to</h3>
+                    <t t-foreach="this.state.data.overbooking.weeks" t-as="week" t-key="week.week_start">
+                        <div class="c2p_week_label">Week of <t t-esc="week.week_start"/></div>
                         <table class="c2p_table">
-                            <thead>
-                                <tr><th>Employee</th><th class="num">Logged</th><th class="num">Planned</th>
-                                    <th class="num">Capacity</th><th class="num">Util.</th><th></th></tr>
-                            </thead>
+                            <thead><tr><th>Employee</th><th>Role</th><th class="num">Planned</th>
+                                <th class="num">Capacity</th><th class="num">Over by</th><th>Free peer</th><th></th></tr></thead>
                             <tbody>
-                                <tr t-foreach="this.state.data.utilisation.by_employee" t-as="row" t-key="row.id">
-                                    <td>
-                                        <span t-esc="row.name"/>
-                                        <span class="c2p_muted" t-esc="' · ' + row.department"/>
-                                    </td>
-                                    <td class="num" t-esc="this.hours(row.logged)"/>
+                                <tr t-foreach="week.rows" t-as="row" t-key="row.id">
+                                    <td t-esc="row.name"/>
+                                    <td t-esc="row.role"/>
                                     <td class="num" t-esc="this.hours(row.planned)"/>
                                     <td class="num" t-esc="this.hours(row.capacity)"/>
-                                    <td t-attf-class="num {{ row.utilisation_pct > 100 ? 'c2p_neg' : '' }}"
-                                        t-esc="this.pct(row.utilisation_pct)"/>
+                                    <td class="num c2p_neg" t-esc="this.hours(row.over_by)"/>
                                     <td>
-                                        <button class="c2p_drill" title="Timesheets"
-                                                t-on-click="() => this.drill('employee_timesheets', row.id)">↗</button>
+                                        <t t-if="row.peers.length">
+                                            <span class="c2p_peer" t-foreach="row.peers" t-as="peer" t-key="peer.id">
+                                                <t t-esc="peer.name"/> (<t t-esc="this.hours(peer.spare_hours)"/> free)
+                                            </span>
+                                        </t>
+                                        <span class="c2p_muted" t-else="">no peer with spare hours in this role</span>
                                     </td>
-                                </tr>
-                                <tr t-if="!this.state.data.utilisation.by_employee.length">
-                                    <td colspan="6" class="c2p_empty">No logged, planned or contracted hours in this range.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                        <h3>By department</h3>
-                        <table class="c2p_table">
-                            <thead>
-                                <tr><th>Department</th><th class="num">Logged</th><th class="num">Capacity</th><th>Util.</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach="this.state.data.utilisation.by_department" t-as="row" t-key="row.id">
-                                    <td t-esc="row.name"/>
-                                    <td class="num" t-esc="this.hours(row.logged)"/>
-                                    <td class="num" t-esc="this.hours(row.capacity)"/>
                                     <td>
-                                        <span class="c2p_bar">
-                                            <span class="c2p_bar_fill"
-                                                  t-attf-style="width: {{ this.clampPct(row.utilisation_pct) }}%"/>
-                                        </span>
-                                        <span class="c2p_burn_pct" t-esc="this.pct(row.utilisation_pct)"/>
+                                        <button class="c2p_drill" title="Planning"
+                                                t-on-click="() => this.drill('employee_planning', row.id)">↗</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <p class="c2p_footnote" t-if="!this.state.data.utilisation.notes.planning_available">
-                            Planned hours are blank: Planning is not installed on this database.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Overbooking -->
-            <section class="c2p_panel" t-if="this.state.data.overbooking.available and this.state.data.overbooking.overbooked_count">
-                <header>
-                    <h2>Overbooked this period</h2>
-                    <span class="c2p_sub">Planned above weekly capacity, with a free peer in the same role.</span>
-                </header>
-                <t t-foreach="this.state.data.overbooking.weeks" t-as="week" t-key="week.week_start">
-                    <h3 class="c2p_week">Week of <t t-esc="week.week_start"/></h3>
-                    <table class="c2p_table">
-                        <thead>
-                            <tr><th>Employee</th><th>Role</th><th class="num">Planned</th>
-                                <th class="num">Capacity</th><th class="num">Over by</th>
-                                <th>Free peer</th><th></th></tr>
-                        </thead>
-                        <tbody>
-                            <tr t-foreach="week.rows" t-as="row" t-key="row.id">
-                                <td t-esc="row.name"/>
-                                <td t-esc="row.role"/>
-                                <td class="num" t-esc="this.hours(row.planned)"/>
-                                <td class="num" t-esc="this.hours(row.capacity)"/>
-                                <td class="num c2p_neg" t-esc="this.hours(row.over_by)"/>
-                                <td>
-                                    <t t-if="row.peers.length">
-                                        <span t-foreach="row.peers" t-as="peer" t-key="peer.id" class="c2p_peer">
-                                            <t t-esc="peer.name"/> (<t t-esc="this.hours(peer.spare_hours)"/> free)
-                                        </span>
-                                    </t>
-                                    <span class="c2p_muted" t-else="">no peer with spare hours in this role</span>
-                                </td>
-                                <td>
-                                    <button class="c2p_drill" title="Planning"
-                                            t-on-click="() => this.drill('employee_planning', row.id)">↗</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    </t>
                 </t>
             </section>
 
-            <!-- 5. Pipeline -->
-            <section class="c2p_panel">
-                <header><h2>Pipeline</h2></header>
+            <!-- ================= 05 pipeline ================= -->
+            <section class="c2p_panel" id="c2p_s_pipeline">
+                <header>
+                    <h2>Pipeline</h2>
+                    <span class="c2p_sub">Open opportunities by stage, with the weighted forecast.</span>
+                </header>
                 <div class="c2p_kpis">
                     <div class="c2p_kpi">
                         <span class="c2p_kpi_label">Open value</span>
@@ -469,7 +403,8 @@
                         <span class="c2p_kpi_label">Win rate</span>
                         <span class="c2p_kpi_value" t-esc="this.pct(this.state.data.pipeline.totals.win_rate_pct)"/>
                         <span class="c2p_kpi_foot">
-                            <t t-esc="this.state.data.pipeline.totals.won"/> won / <t t-esc="this.state.data.pipeline.totals.lost"/> lost
+                            <t t-esc="this.state.data.pipeline.totals.won"/> won /
+                            <t t-esc="this.state.data.pipeline.totals.lost"/> lost
                         </span>
                     </div>
                     <div class="c2p_kpi">
@@ -477,37 +412,30 @@
                         <span class="c2p_kpi_value" t-esc="this.state.data.pipeline.totals.count"/>
                     </div>
                 </div>
-                <table class="c2p_table">
-                    <thead>
-                        <tr><th>Stage</th><th class="num">Count</th><th class="num">Value</th>
-                            <th class="num">Weighted</th><th></th><th></th></tr>
-                    </thead>
-                    <tbody>
-                        <tr t-foreach="this.state.data.pipeline.by_stage" t-as="row" t-key="row.id">
-                            <td t-esc="row.name"/>
-                            <td class="num" t-esc="row.count"/>
-                            <td class="num" t-esc="this.money(row.expected)"/>
-                            <td class="num" t-esc="this.money(row.weighted)"/>
-                            <td>
-                                <span class="c2p_bar">
-                                    <span class="c2p_bar_fill"
-                                          t-attf-style="width: {{ this.barWidth(row.expected, this.state.data.pipeline.by_stage, 'expected') }}%"/>
-                                </span>
-                            </td>
-                            <td>
-                                <button class="c2p_drill" title="Opportunities"
-                                        t-on-click="() => this.drill('pipeline_stage', row.id)">↗</button>
-                            </td>
-                        </tr>
-                        <tr t-if="!this.state.data.pipeline.by_stage.length">
-                            <td colspan="6" class="c2p_empty">No open opportunities.</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <div class="c2p_funnel">
+                    <button class="c2p_funnel_row" t-foreach="this.state.data.pipeline.by_stage" t-as="row"
+                            t-key="row.id" t-on-click="() => this.drill('pipeline_stage', row.id)">
+                        <span class="c2p_funnel_label">
+                            <t t-esc="row.name"/>
+                            <span class="c2p_muted"><t t-esc="row.count"/> open</span>
+                        </span>
+                        <span class="c2p_funnel_bar"
+                              t-attf-style="width: {{ this.funnelWidth(row.expected, this.state.data.pipeline.by_stage, 'expected') }}%">
+                            <span class="c2p_funnel_value" t-esc="this.money(row.expected)"/>
+                        </span>
+                        <span class="c2p_funnel_weighted">
+                            weighted <t t-esc="this.money(row.weighted)"/>
+                        </span>
+                    </button>
+                    <p class="c2p_empty" t-if="!this.state.data.pipeline.by_stage.length">
+                        No open opportunities.
+                    </p>
+                </div>
             </section>
 
-            <!-- 6. Pitch cost vs win rate -->
-            <section class="c2p_panel">
+            <!-- ================= 06 pitch ================= -->
+            <section class="c2p_panel" id="c2p_s_pitch">
                 <header>
                     <h2>Pitch cost against wins</h2>
                     <span class="c2p_sub">Time booked to jobs flagged as pitch work, against what those pitches won.</span>
@@ -526,7 +454,8 @@
                             <span class="c2p_kpi_label">Win rate</span>
                             <span class="c2p_kpi_value" t-esc="this.pct(this.state.data.pitch.totals.win_rate_pct)"/>
                             <span class="c2p_kpi_foot">
-                                <t t-esc="this.state.data.pitch.totals.won_count"/> of <t t-esc="this.state.data.pitch.totals.pitched_count"/>
+                                <t t-esc="this.state.data.pitch.totals.won_count"/> of
+                                <t t-esc="this.state.data.pitch.totals.pitched_count"/>
                             </span>
                         </div>
                         <div class="c2p_kpi">
@@ -537,8 +466,7 @@
                             <span class="c2p_kpi_label">Won value</span>
                             <span class="c2p_kpi_value" t-esc="this.money(this.state.data.pitch.totals.won_value)"/>
                             <span class="c2p_kpi_foot">
-                                <t t-esc="this.number(this.state.data.pitch.totals.return_multiple, 1)"/>×
-                                pitch cost
+                                <t t-esc="this.number(this.state.data.pitch.totals.return_multiple, 1)"/>× pitch cost
                             </span>
                         </div>
                     </div>
@@ -573,42 +501,35 @@
                 </p>
             </section>
 
-            <!-- 7. Receivables -->
-            <section class="c2p_panel">
+            <!-- ================= 07 receivables ================= -->
+            <section class="c2p_panel" id="c2p_s_receivables">
                 <header>
                     <h2>Receivables</h2>
                     <span class="c2p_sub">Open customer balances, aged on due date at the end of the range.</span>
                 </header>
-                <div class="c2p_receivables">
-                    <div class="c2p_donut_wrap">
-                        <svg viewBox="0 0 140 140" class="c2p_donut" role="img"
-                             aria-label="Receivables by ageing bucket">
-                            <circle cx="70" cy="70" r="54" class="c2p_donut_track"/>
-                            <circle t-foreach="this.donutSegments(this.state.data.receivables.buckets)" t-as="seg"
-                                    t-key="seg.key" cx="70" cy="70" r="54"
-                                    t-attf-class="c2p_donut_seg c2p_shade_{{ seg.shade }}"
-                                    t-att-stroke-dasharray="seg.dash"
-                                    t-att-stroke-dashoffset="seg.offset"/>
-                            <text x="70" y="66" class="c2p_donut_total" t-esc="this.money(this.state.data.receivables.totals.total)"/>
-                            <text x="70" y="84" class="c2p_donut_caption">open</text>
-                        </svg>
+
+                <div class="c2p_stack_wrap">
+                    <div class="c2p_stack">
+                        <span t-foreach="this.state.data.receivables.buckets" t-as="bucket" t-key="bucket.key"
+                              t-attf-class="c2p_stack_seg c2p_stack_{{ bucket.key }}"
+                              t-attf-style="width: {{ this.shareOf(bucket.amount, this.state.data.receivables.totals.total) }}%"
+                              t-attf-title="{{ bucket.label }}"/>
                     </div>
-                    <div class="c2p_ageing">
-                        <div class="c2p_ageing_row" t-foreach="this.state.data.receivables.buckets" t-as="bucket" t-key="bucket.key">
-                            <span class="c2p_ageing_label" t-esc="bucket.label"/>
-                            <span class="c2p_bar">
-                                <span class="c2p_bar_fill"
-                                      t-attf-style="width: {{ this.barWidth(bucket.amount, this.state.data.receivables.buckets, 'amount') }}%"/>
-                            </span>
-                            <span class="c2p_ageing_amount" t-esc="this.money(bucket.amount)"/>
-                        </div>
-                        <div class="c2p_ageing_total">
-                            <t t-esc="this.money(this.state.data.receivables.totals.overdue)"/> overdue
-                            (<t t-esc="this.pct(this.state.data.receivables.totals.overdue_pct)"/> of open)
-                            <button class="c2p_drill" t-on-click="() => this.drill('leak_overdue')">↗</button>
-                        </div>
+                    <div class="c2p_stack_legend">
+                        <span class="c2p_stack_key" t-foreach="this.state.data.receivables.buckets"
+                              t-as="bucket" t-key="bucket.key">
+                            <span t-attf-class="c2p_swatch c2p_stack_{{ bucket.key }}"/>
+                            <span class="c2p_stack_label" t-esc="bucket.label"/>
+                            <span class="c2p_stack_amount" t-esc="this.money(bucket.amount)"/>
+                        </span>
+                    </div>
+                    <div class="c2p_stack_total">
+                        <t t-esc="this.money(this.state.data.receivables.totals.overdue)"/> overdue
+                        of <t t-esc="this.money(this.state.data.receivables.totals.total)"/> open
+                        <button class="c2p_drill" t-on-click="() => this.drill('leak_overdue')">↗</button>
                     </div>
                 </div>
+
                 <h3>Overdue invoices</h3>
                 <table class="c2p_table">
                     <thead>
@@ -634,11 +555,11 @@
                 </table>
             </section>
 
-            <!-- 8. Creative studio -->
-            <section class="c2p_panel">
+            <!-- ================= 08 creative studio ================= -->
+            <section class="c2p_panel" id="c2p_s_studio">
                 <header>
                     <h2>Creative studio</h2>
-                    <span class="c2p_sub">Throughput of the work itself: what is in the studio and what is waiting on a decision.</span>
+                    <span class="c2p_sub">The work itself: what is in the studio, and what is waiting on a decision.</span>
                 </header>
                 <div class="c2p_kpis">
                     <div class="c2p_kpi">
@@ -647,8 +568,7 @@
                     </div>
                     <div class="c2p_kpi">
                         <span class="c2p_kpi_label">Rounds per asset</span>
-                        <span class="c2p_kpi_value"
-                              t-esc="this.number(this.state.data.creative.rounds_per_asset, 1)"/>
+                        <span class="c2p_kpi_value" t-esc="this.number(this.state.data.creative.rounds_per_asset, 1)"/>
                     </div>
                     <div class="c2p_kpi">
                         <span class="c2p_kpi_label">Avg approval turnaround</span>
@@ -657,35 +577,26 @@
                     <div class="c2p_kpi c2p_kpi_accent">
                         <span class="c2p_kpi_label">Awaiting review</span>
                         <span class="c2p_kpi_value" t-esc="this.state.data.creative.awaiting_review"/>
-                        <button class="c2p_kpi_drill"
-                                t-on-click="() => this.drill('assets_awaiting')">see them</button>
+                        <button class="c2p_kpi_drill" t-on-click="() => this.drill('assets_awaiting')">see them</button>
                     </div>
                 </div>
+
                 <div class="c2p_two_col">
                     <div>
                         <h3>Briefs by stage</h3>
-                        <table class="c2p_table">
-                            <thead><tr><th>Stage</th><th class="num">Briefs</th><th></th><th></th></tr></thead>
-                            <tbody>
-                                <tr t-foreach="this.state.data.creative.briefs_by_stage" t-as="row" t-key="row.key">
-                                    <td t-esc="row.name"/>
-                                    <td class="num" t-esc="row.count"/>
-                                    <td>
-                                        <span class="c2p_bar">
-                                            <span class="c2p_bar_fill"
-                                                  t-attf-style="width: {{ this.barWidth(row.count, this.state.data.creative.briefs_by_stage, 'count') }}%"/>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="c2p_drill" title="Briefs"
-                                                t-on-click="() => this.drill('briefs', row.key)">↗</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="c2p_funnel">
+                            <button class="c2p_funnel_row" t-foreach="this.state.data.creative.briefs_by_stage"
+                                    t-as="row" t-key="row.key" t-on-click="() => this.drill('briefs', row.key)">
+                                <span class="c2p_funnel_label" t-esc="row.name"/>
+                                <span class="c2p_funnel_bar"
+                                      t-attf-style="width: {{ this.funnelWidth(row.count, this.state.data.creative.briefs_by_stage, 'count') }}%">
+                                    <span class="c2p_funnel_value" t-esc="row.count"/>
+                                </span>
+                            </button>
+                        </div>
                     </div>
                     <div>
-                        <h3>Waiting on a review</h3>
+                        <h3>Waiting on an art director</h3>
                         <table class="c2p_table">
                             <thead><tr><th>Asset</th><th>Brief</th><th>Designer</th><th class="num">Rounds</th></tr></thead>
                             <tbody>
@@ -705,7 +616,7 @@
             </section>
         </t>
 
-        <!-- Client 360 -->
+        <!-- ================= Client 360 overlay ================= -->
         <div class="c2p_overlay" t-if="this.state.client360 and this.state.client360.partner">
             <div class="c2p_overlay_card">
                 <header class="c2p_overlay_head">
@@ -740,7 +651,6 @@
                         <span class="c2p_kpi_value" t-esc="this.state.client360.briefs"/>
                     </div>
                 </div>
-
                 <div class="c2p_two_col">
                     <div>
                         <h3>Active jobs</h3>
@@ -757,56 +667,19 @@
                                 </tr>
                             </tbody>
                         </table>
-
-                        <h3>Retainer burn</h3>
-                        <table class="c2p_table">
-                            <thead><tr><th>Retainer</th><th class="num">Fee</th><th class="num">Cost</th><th class="num">Burn</th></tr></thead>
-                            <tbody>
-                                <tr t-foreach="this.state.client360.retainers" t-as="row" t-key="row.id">
-                                    <td t-esc="row.name"/>
-                                    <td class="num" t-esc="this.money(row.fee_for_period)"/>
-                                    <td class="num" t-esc="this.money(row.cost)"/>
-                                    <td t-attf-class="num {{ row.burn_pct >= 100 ? 'c2p_neg' : '' }}"
-                                        t-esc="this.pct(row.burn_pct)"/>
-                                </tr>
-                                <tr t-if="!this.state.client360.retainers.length">
-                                    <td colspan="4" class="c2p_empty">No retainer on this client.</td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                     <div>
                         <h3>Open invoices</h3>
                         <table class="c2p_table">
-                            <thead><tr><th>Invoice</th><th>Due</th><th class="num">Outstanding</th><th></th></tr></thead>
+                            <thead><tr><th>Invoice</th><th>Due</th><th class="num">Outstanding</th></tr></thead>
                             <tbody>
                                 <tr t-foreach="this.state.client360.open_invoices" t-as="inv" t-key="inv.id">
                                     <td t-esc="inv.name"/>
                                     <td t-attf-class="{{ inv.overdue ? 'c2p_neg' : '' }}" t-esc="inv.date_due || '—'"/>
                                     <td class="num" t-esc="this.money(inv.residual)"/>
-                                    <td>
-                                        <button class="c2p_drill"
-                                                t-on-click="() => this.drill('overdue_invoice', inv.id)">↗</button>
-                                    </td>
                                 </tr>
                                 <tr t-if="!this.state.client360.open_invoices.length">
-                                    <td colspan="4" class="c2p_empty">Nothing outstanding.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <h3>Recent review rounds</h3>
-                        <table class="c2p_table">
-                            <thead><tr><th>Asset</th><th class="num">Round</th><th>Decision</th><th>Date</th></tr></thead>
-                            <tbody>
-                                <tr t-foreach="this.state.client360.recent_reviews" t-as="rev" t-key="rev.id">
-                                    <td t-esc="rev.asset"/>
-                                    <td class="num" t-esc="rev.round"/>
-                                    <td t-esc="rev.decision"/>
-                                    <td t-esc="rev.date"/>
-                                </tr>
-                                <tr t-if="!this.state.client360.recent_reviews.length">
-                                    <td colspan="4" class="c2p_empty">No review rounds yet.</td>
+                                    <td colspan="3" class="c2p_empty">Nothing outstanding.</td>
                                 </tr>
                             </tbody>
                         </table>

@@ -134,13 +134,73 @@ export class C2pManagementDashboard extends Component {
         )} d`;
     }
 
+
     // ------------------------------------------------------------------
-    // chart geometry: plain SVG, so there is no charting library to keep
-    // in step with the web client across versions
+    // presentation helpers: anything the layout needs that is arithmetic or
+    // string work, kept out of the template
     // ------------------------------------------------------------------
-    barWidth(value, rows, key) {
+
+    /** Up to two initials, for the client league badges. */
+    initials(name) {
+        return String(name || "")
+            .split(/\s+/)
+            .filter((word) => word.length)
+            .slice(0, 2)
+            .map((word) => word[0].toUpperCase())
+            .join("");
+    }
+
+    /** One value's share of a total, as a percentage, clamped. */
+    shareOf(value, total) {
+        const divisor = Number(total || 0);
+        if (!divisor) {
+            return 0;
+        }
+        return this.clampPct((Math.abs(Number(value || 0)) / Math.abs(divisor)) * 100);
+    }
+
+    /** Heat band for a utilisation cell: under-used, healthy, or over. */
+    heatTone(percentage) {
+        const value = Number(percentage || 0);
+        if (value > 100) {
+            return "c2p_heat_over";
+        }
+        if (value >= 75) {
+            return "c2p_heat_good";
+        }
+        if (value >= 50) {
+            return "c2p_heat_mid";
+        }
+        return "c2p_heat_low";
+    }
+
+    /** Funnel width: each stage against the widest one. */
+    funnelWidth(value, rows, key) {
         const max = Math.max(...rows.map((row) => Math.abs(Number(row[key] || 0))), 1);
-        return Math.min(Math.abs(Number(value || 0)) / max * 100, 100);
+        const share = (Math.abs(Number(value || 0)) / max) * 100;
+        // never collapse to nothing, or a small stage disappears entirely
+        return Math.max(share, 8);
+    }
+
+    /** Scroll a section into view from the section nav. */
+    jumpTo(sectionId) {
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }
+
+    get sections() {
+        return [
+            { id: "c2p_s_leaks", label: "Margin leaks" },
+            { id: "c2p_s_profit", label: "Profitability" },
+            { id: "c2p_s_retainers", label: "Retainers" },
+            { id: "c2p_s_util", label: "Utilisation" },
+            { id: "c2p_s_pipeline", label: "Pipeline" },
+            { id: "c2p_s_pitch", label: "Pitch" },
+            { id: "c2p_s_receivables", label: "Receivables" },
+            { id: "c2p_s_studio", label: "Studio" },
+        ];
     }
 
     /**
@@ -160,29 +220,6 @@ export class C2pManagementDashboard extends Component {
         return bad ? "c2p_ring_bad" : watch ? "c2p_ring_watch" : "c2p_ring_good";
     }
 
-    donutSegments(buckets) {
-        const total = buckets.reduce((sum, bucket) => sum + Math.abs(bucket.amount || 0), 0);
-        if (!total) {
-            return [];
-        }
-        const radius = 54;
-        const circumference = 2 * Math.PI * radius;
-        let offset = 0;
-        return buckets.map((bucket, index) => {
-            const share = Math.abs(bucket.amount || 0) / total;
-            const segment = {
-                label: bucket.label,
-                amount: bucket.amount,
-                key: bucket.key,
-                share: share * 100,
-                dash: `${share * circumference} ${circumference}`,
-                offset: -offset * circumference,
-                shade: index,
-            };
-            offset += share;
-            return segment;
-        });
-    }
 
     // ------------------------------------------------------------------
     // drill-through
