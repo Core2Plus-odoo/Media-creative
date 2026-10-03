@@ -75,5 +75,12 @@ showing a number.
 
 ### Seeded data
 
-On a database carrying Odoo's demo flag the dashboard shows a banner saying so,
-because seeded records otherwise read as real trading activity.
+`c2p_creative_studio` ships its agency content in `data/creative_studio_seed.xml`
+rather than in `demo/`, because Odoo.sh loads demo data only on development
+builds and the production database needs the content present. The file is
+`noupdate="1"`, so edits made in the UI survive an upgrade.
+
+The dashboard shows a banner whenever those seed records are present, or
+whenever the database carries Odoo's own demo flag. Every figure is read from
+real records, but on this instance those records were seeded for the demo rather
+than produced by trading activity, and the banner says so.

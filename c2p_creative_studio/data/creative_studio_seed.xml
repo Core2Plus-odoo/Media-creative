@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Seed data for the agency demo. Lives in data/ rather than demo/ because
+     Odoo.sh loads demo data only on development builds, and the production
+     build needs this content to be present. noupdate keeps later edits made
+     in the UI from being overwritten on upgrade. -->
+<odoo noupdate="1">
+    <!-- Fictional client for the demo. -->
+    <record id="demo_partner_margalla_bank" model="res.partner">
+        <field name="name">Margalla Bank</field>
+        <field name="is_company" eval="True"/>
+        <field name="city">Islamabad</field>
+        <field name="comment">Demo client for the Creative Studio walkthrough.</field>
+    </record>
+
+    <record id="demo_brief_digital_savings" model="c2p.creative.brief">
+        <field name="name">Digital Savings Launch</field>
+        <field name="partner_id" ref="demo_partner_margalla_bank"/>
+        <field name="deadline" eval="(DateTime.today() + relativedelta(days=21)).strftime('%Y-%m-%d')"/>
+        <field name="state">review</field>
+        <field name="proposition">Saving starts with one small step you can take today.</field>
+        <field name="tone">Warm, plain-spoken, quietly confident. No jargon, no hard sell.</field>
+        <field name="objective" type="html">
+            <p>Launch the bank's app-first savings account to first-time savers aged 22-35
+               in Karachi, Lahore and Islamabad. Drive app installs and completed
+               account openings in the first eight weeks.</p>
+        </field>
+        <field name="audience" type="html">
+            <p>Salaried and self-employed young adults who have never held a savings
+               product. They are comfortable on a phone, sceptical of banks, and put off
+               by paperwork and minimum balances.</p>
+        </field>
+        <field name="mandatories" type="html">
+            <ul>
+                <li>Profit rate and terms legible in every execution.</li>
+                <li>Urdu and English versions of all copy lines.</li>
+                <li>No depiction of cash; app-first framing throughout.</li>
+            </ul>
+        </field>
+        <field name="deliverables" type="html">
+            <ul>
+                <li>Key visual, master plus three crops.</li>
+                <li>Launch film, 30 and 15 second cuts.</li>
+                <li>Social content set for the first four weeks.</li>
+                <li>OOH for three cities.</li>
+            </ul>
+        </field>
+    </record>
+
+    <!-- Three routes developed against the brief. -->
+    <record id="demo_concept_pehla_qadam" model="c2p.creative.concept">
+        <field name="name">Pehla Qadam</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="tagline">The first step is the whole story.</field>
+        <field name="state">shortlisted</field>
+        <field name="originality">4</field>
+        <field name="brand_fit">5</field>
+        <field name="feasibility">5</field>
+        <field name="rationale" type="html">
+            <p>Saving is not a lifestyle, it is a first step. We open on the smallest
+               possible deposit and treat it as the moment everything changed. The
+               account becomes the step, not the product.</p>
+        </field>
+        <field name="visual_direction" type="html">
+            <p>Documentary-close portraiture, natural light, real interiors. Type sits
+               quietly bottom-left. One warm accent against a neutral palette.</p>
+        </field>
+    </record>
+
+    <record id="demo_concept_kal_ki_tayyari" model="c2p.creative.concept">
+        <field name="name">Kal Ki Tayyari</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="tagline">Getting ready for tomorrow, today.</field>
+        <field name="state">parked</field>
+        <field name="originality">3</field>
+        <field name="brand_fit">4</field>
+        <field name="feasibility">4</field>
+        <field name="rationale" type="html">
+            <p>Frames the account as quiet preparation: the wedding, the shop, the
+               degree. Strong emotionally but close to category convention, which is
+               why it was parked rather than dropped.</p>
+        </field>
+        <field name="visual_direction" type="html">
+            <p>Golden-hour vignettes, shallow depth of field, hand-lettered Urdu
+               headlines.</p>
+        </field>
+    </record>
+
+    <record id="demo_concept_numbers_face" model="c2p.creative.concept">
+        <field name="name">Numbers with a Face</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="tagline">Every figure belongs to someone.</field>
+        <field name="state">shortlisted</field>
+        <field name="originality">5</field>
+        <field name="brand_fit">3</field>
+        <field name="feasibility">4</field>
+        <field name="rationale" type="html">
+            <p>Turns the rate table into people. Each number in the app is rendered as
+               a portrait, so the maths is never abstract. Distinctive device, weaker
+               on brand warmth on its own.</p>
+        </field>
+        <field name="visual_direction" type="html">
+            <p>Editorial grid, oversized numerals, cut-out portraits, high contrast.
+               Motion built on numerals resolving into faces.</p>
+        </field>
+    </record>
+
+    <!-- Routes A and C combined, and that combination is the selected route. -->
+    <record id="demo_concept_combined" model="c2p.creative.concept">
+        <field name="name">Pehla Qadam + Numbers with a Face (combined)</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="tagline">One small step, and the number it becomes.</field>
+        <field name="state">selected</field>
+        <field name="originality">5</field>
+        <field name="brand_fit">5</field>
+        <field name="feasibility">4</field>
+        <field name="source_ids" eval="[(6, 0, [
+            ref('demo_concept_pehla_qadam'),
+            ref('demo_concept_numbers_face')])]"/>
+        <field name="rationale" type="html">
+            <p>Keeps the first-step story of Pehla Qadam as the emotional spine and
+               borrows the numeral-into-portrait device from Numbers with a Face as the
+               campaign's signature. The step is the idea; the number is how we show it
+               adding up.</p>
+        </field>
+        <field name="visual_direction" type="html">
+            <p>Documentary portraiture as the base layer, with the oversized numeral
+               treatment reserved for the pay-off frame in each execution.</p>
+        </field>
+    </record>
+
+    <!-- Four deliverables against the selected route. -->
+    <record id="demo_asset_key_visual" model="c2p.creative.asset">
+        <field name="name">Master Key Visual - Pehla Qadam</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="concept_id" ref="demo_concept_combined"/>
+        <field name="asset_type">key_visual</field>
+        <field name="version">2</field>
+    </record>
+
+    <record id="demo_asset_film" model="c2p.creative.asset">
+        <field name="name">Launch Film - 30 second cut</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="concept_id" ref="demo_concept_combined"/>
+        <field name="asset_type">film</field>
+        <field name="version">1</field>
+    </record>
+
+    <record id="demo_asset_social" model="c2p.creative.asset">
+        <field name="name">Social Set - Week 1 to 4</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="concept_id" ref="demo_concept_combined"/>
+        <field name="asset_type">social</field>
+        <field name="version">1</field>
+        <!-- out for review; the OOH below is still in progress -->
+        <field name="state">review</field>
+    </record>
+
+    <record id="demo_asset_ooh" model="c2p.creative.asset">
+        <field name="name">OOH - Karachi, Lahore, Islamabad</field>
+        <field name="brief_id" ref="demo_brief_digital_savings"/>
+        <field name="concept_id" ref="demo_concept_combined"/>
+        <field name="asset_type">ooh</field>
+        <field name="version">1</field>
+    </record>
+
+    <!-- Review rounds. The key visual went round twice and is approved; the film
+         is back with the designer. Rounds are numbered by the model, not here. -->
+    <record id="demo_review_kv_1" model="c2p.creative.review">
+        <field name="asset_id" ref="demo_asset_key_visual"/>
+        <field name="decision">changes</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html">
+            <p>Idea reads. Crop is too wide and the numeral fights the logo. Tighten to
+               the hands, drop the numeral to the pay-off frame only, and set the rate
+               line at the legal minimum size rather than larger.</p>
+        </field>
+    </record>
+
+    <record id="demo_review_kv_2" model="c2p.creative.review">
+        <field name="asset_id" ref="demo_asset_key_visual"/>
+        <field name="decision">approved</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=4)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html">
+            <p>Approved. Crop and type hierarchy are right. Release to the client with
+               the Urdu line locked.</p>
+        </field>
+    </record>
+
+    <record id="demo_review_film_1" model="c2p.creative.review">
+        <field name="asset_id" ref="demo_asset_film"/>
+        <field name="decision">changes</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html">
+            <p>First twelve seconds are slow. Open on the deposit, not the walk-up.
+               Re-cut and bring the numeral resolve forward to the 20 second mark.</p>
+        </field>
+    </record>
+
+
+    <!-- ================= Chenab Foods: Mango Season ================= -->
+    <record id="seed_partner_chenab_foods" model="res.partner">
+        <field name="name">Chenab Foods</field>
+        <field name="is_company" eval="True"/>
+        <field name="city">Multan</field>
+    </record>
+
+    <record id="seed_brief_mango_season" model="c2p.creative.brief">
+        <field name="name">Mango Season</field>
+        <field name="partner_id" ref="seed_partner_chenab_foods"/>
+        <field name="deadline" eval="(DateTime.today() - relativedelta(days=5)).strftime('%Y-%m-%d')"/>
+        <field name="state">approved</field>
+        <field name="proposition">The six weeks everyone waits all year for.</field>
+        <field name="tone">Generous, unhurried, a little proud.</field>
+        <field name="objective" type="html">
+            <p>Own the mango season in grocery and modern trade. Shift volume in six
+               weeks and leave the brand associated with the season itself.</p>
+        </field>
+    </record>
+
+    <record id="seed_concept_season_table" model="c2p.creative.concept">
+        <field name="name">The Season Table</field>
+        <field name="brief_id" ref="seed_brief_mango_season"/>
+        <field name="tagline">Pull up a chair.</field>
+        <field name="state">selected</field>
+        <field name="originality">4</field>
+        <field name="brand_fit">5</field>
+        <field name="feasibility">5</field>
+    </record>
+
+    <record id="seed_concept_six_weeks" model="c2p.creative.concept">
+        <field name="name">Six Weeks Only</field>
+        <field name="brief_id" ref="seed_brief_mango_season"/>
+        <field name="tagline">Then it is gone.</field>
+        <field name="state">shortlisted</field>
+        <field name="originality">4</field>
+        <field name="brand_fit">3</field>
+        <field name="feasibility">4</field>
+    </record>
+
+    <record id="seed_asset_mango_kv" model="c2p.creative.asset">
+        <field name="name">Mango Season - Key Visual</field>
+        <field name="brief_id" ref="seed_brief_mango_season"/>
+        <field name="concept_id" ref="seed_concept_season_table"/>
+        <field name="asset_type">key_visual</field>
+        <field name="version">3</field>
+    </record>
+
+    <record id="seed_asset_mango_print" model="c2p.creative.asset">
+        <field name="name">Mango Season - Press Insert</field>
+        <field name="brief_id" ref="seed_brief_mango_season"/>
+        <field name="concept_id" ref="seed_concept_season_table"/>
+        <field name="asset_type">print</field>
+        <field name="version">2</field>
+    </record>
+
+    <record id="seed_asset_mango_social" model="c2p.creative.asset">
+        <field name="name">Mango Season - Reels Cutdowns</field>
+        <field name="brief_id" ref="seed_brief_mango_season"/>
+        <field name="concept_id" ref="seed_concept_season_table"/>
+        <field name="asset_type">social</field>
+        <field name="version">1</field>
+        <field name="state">review</field>
+    </record>
+
+    <record id="seed_review_mango_kv_1" model="c2p.creative.review">
+        <field name="asset_id" ref="seed_asset_mango_kv"/>
+        <field name="decision">changes</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=26)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html"><p>Fruit reads as styled. Shoot it on a real table, mid-meal.</p></field>
+    </record>
+
+    <record id="seed_review_mango_kv_2" model="c2p.creative.review">
+        <field name="asset_id" ref="seed_asset_mango_kv"/>
+        <field name="decision">approved</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=21)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html"><p>Approved. Warmth is there now.</p></field>
+    </record>
+
+    <record id="seed_review_mango_print_1" model="c2p.creative.review">
+        <field name="asset_id" ref="seed_asset_mango_print"/>
+        <field name="decision">changes</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=19)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html"><p>Headline sits too low. Raise it and let the crate breathe.</p></field>
+    </record>
+
+    <record id="seed_review_mango_print_2" model="c2p.creative.review">
+        <field name="asset_id" ref="seed_asset_mango_print"/>
+        <field name="decision">approved</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=16)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html"><p>Approved for the insert deadline.</p></field>
+    </record>
+
+    <!-- ================= Karakoram Telecom: Network Pride ================= -->
+    <record id="seed_partner_karakoram_telecom" model="res.partner">
+        <field name="name">Karakoram Telecom</field>
+        <field name="is_company" eval="True"/>
+        <field name="city">Karachi</field>
+    </record>
+
+    <record id="seed_brief_network_pride" model="c2p.creative.brief">
+        <field name="name">Network Pride</field>
+        <field name="partner_id" ref="seed_partner_karakoram_telecom"/>
+        <field name="deadline" eval="(DateTime.today() + relativedelta(days=34)).strftime('%Y-%m-%d')"/>
+        <field name="state">concepting</field>
+        <field name="proposition">Coverage where it was never meant to reach.</field>
+        <field name="tone">Plain, factual, quietly impressive.</field>
+        <field name="objective" type="html">
+            <p>Shift perception on network quality in the north before the winter
+               travel season.</p>
+        </field>
+    </record>
+
+    <record id="seed_concept_last_village" model="c2p.creative.concept">
+        <field name="name">The Last Village</field>
+        <field name="brief_id" ref="seed_brief_network_pride"/>
+        <field name="tagline">Still four bars.</field>
+        <field name="state">shortlisted</field>
+        <field name="originality">5</field>
+        <field name="brand_fit">4</field>
+        <field name="feasibility">2</field>
+    </record>
+
+    <record id="seed_concept_one_bar" model="c2p.creative.concept">
+        <field name="name">One Bar Is Enough</field>
+        <field name="brief_id" ref="seed_brief_network_pride"/>
+        <field name="tagline">Until it is not.</field>
+        <field name="state">idea</field>
+        <field name="originality">3</field>
+        <field name="brand_fit">4</field>
+        <field name="feasibility">5</field>
+    </record>
+
+    <record id="seed_asset_telecom_film" model="c2p.creative.asset">
+        <field name="name">Network Pride - Animatic</field>
+        <field name="brief_id" ref="seed_brief_network_pride"/>
+        <field name="concept_id" ref="seed_concept_last_village"/>
+        <field name="asset_type">film</field>
+        <field name="version">1</field>
+        <field name="state">review</field>
+    </record>
+
+    <!-- ================= Sindh Solar: Power On (just briefed) ============= -->
+    <record id="seed_partner_sindh_solar" model="res.partner">
+        <field name="name">Sindh Solar</field>
+        <field name="is_company" eval="True"/>
+        <field name="city">Hyderabad</field>
+    </record>
+
+    <record id="seed_brief_power_on" model="c2p.creative.brief">
+        <field name="name">Power On</field>
+        <field name="partner_id" ref="seed_partner_sindh_solar"/>
+        <field name="deadline" eval="(DateTime.today() + relativedelta(days=58)).strftime('%Y-%m-%d')"/>
+        <field name="state">draft</field>
+        <field name="proposition">The bill that stops going up.</field>
+        <field name="tone">Straight-talking, no green sermon.</field>
+    </record>
+
+    <!-- ================= Margalla Bank: last season's work, closed ======== -->
+    <record id="seed_brief_ramzan_recap" model="c2p.creative.brief">
+        <field name="name">Ramzan Savings Recap</field>
+        <field name="partner_id" ref="demo_partner_margalla_bank"/>
+        <field name="deadline" eval="(DateTime.today() - relativedelta(days=96)).strftime('%Y-%m-%d')"/>
+        <field name="state">closed</field>
+        <field name="proposition">What a month of small habits adds up to.</field>
+        <field name="tone">Reflective, warm.</field>
+    </record>
+
+    <record id="seed_concept_thirty_days" model="c2p.creative.concept">
+        <field name="name">Thirty Days, Thirty Habits</field>
+        <field name="brief_id" ref="seed_brief_ramzan_recap"/>
+        <field name="tagline">Count them up.</field>
+        <field name="state">selected</field>
+        <field name="originality">3</field>
+        <field name="brand_fit">5</field>
+        <field name="feasibility">5</field>
+    </record>
+
+    <record id="seed_asset_recap_social" model="c2p.creative.asset">
+        <field name="name">Ramzan Recap - Carousel Set</field>
+        <field name="brief_id" ref="seed_brief_ramzan_recap"/>
+        <field name="concept_id" ref="seed_concept_thirty_days"/>
+        <field name="asset_type">social</field>
+        <field name="version">2</field>
+    </record>
+
+    <record id="seed_review_recap_1" model="c2p.creative.review">
+        <field name="asset_id" ref="seed_asset_recap_social"/>
+        <field name="decision">changes</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=112)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html"><p>Too many numbers per card. One habit, one card.</p></field>
+    </record>
+
+    <record id="seed_review_recap_2" model="c2p.creative.review">
+        <field name="asset_id" ref="seed_asset_recap_social"/>
+        <field name="decision">approved</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=108)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="feedback" type="html"><p>Approved. Much calmer.</p></field>
+    </record>
+
+    <!-- Attach whichever creatives exist on this database as the designers. -->
+    <function model="c2p.creative.asset" name="_c2p_seed_assign_designers"/>
+</odoo>

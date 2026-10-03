@@ -21,10 +21,14 @@ class C2pManagementDashboardLeaks(models.AbstractModel):
         data['margin_leaks'] = self._panel_margin_leaks(date_from, date_to)
         data['pitch'] = self._panel_pitch(date_from, date_to)
         data['overbooking'] = self._panel_overbooking(date_from, date_to)
-        # Staging databases carry Odoo's demo flag; say so rather than letting
-        # seeded figures read as real trading activity.
+        # Say plainly when figures rest on seeded records rather than real
+        # trading activity. Two separate signals: Odoo's own demo flag (set on
+        # development builds), and the presence of the Creative Studio seed
+        # records, which install on every database including production.
         base_module = self.env.ref('base.module_base', raise_if_not_found=False)
         data['demo_data'] = bool(base_module and base_module.demo)
+        data['seeded_records'] = bool(self.env.ref(
+            'c2p_creative_studio.demo_brief_digital_savings', raise_if_not_found=False))
         return data
 
     # ==================================================================
