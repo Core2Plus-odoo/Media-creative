@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
@@ -30,21 +30,38 @@ export class C2pManagementDashboard extends Component {
 
         const today = new Date();
         const start = new Date(today.getFullYear(), today.getMonth() - 2, 1);
-        this.state = useState({
+        // Plain object rather than useState: Owl 3 (Odoo 20) no longer exports
+        // useState. Every mutation below happens inside an explicit handler, so
+        // an explicit re-render is enough and leaves one less moving API to
+        // track across versions.
+        this.state = {
             loading: true,
             error: null,
             dateFrom: isoDate(start),
             dateTo: isoDate(today),
             data: null,
             client360: null,
-        });
+        };
+        this.started = false;
 
-        onWillStart(() => this.load());
+        onWillStart(async () => {
+            await this.load();
+            // First paint is driven by onWillStart; only later changes re-render.
+            this.started = true;
+        });
+    }
+
+    /** Re-render, unless the first paint has not happened yet. */
+    refresh() {
+        if (this.started) {
+            this.render();
+        }
     }
 
     async load() {
         this.state.loading = true;
         this.state.error = null;
+        this.refresh();
         try {
             this.state.data = await this.orm.call(MODEL, "get_dashboard_data", [], {
                 date_from: this.state.dateFrom,
@@ -55,6 +72,7 @@ export class C2pManagementDashboard extends Component {
             throw error;
         } finally {
             this.state.loading = false;
+            this.refresh();
         }
     }
 
@@ -180,10 +198,12 @@ export class C2pManagementDashboard extends Component {
             date_from: this.state.dateFrom,
             date_to: this.state.dateTo,
         });
+        this.refresh();
     }
 
     closeClient360() {
         this.state.client360 = null;
+        this.refresh();
     }
 }
 
