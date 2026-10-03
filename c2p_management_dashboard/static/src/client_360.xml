@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
 <t t-name="c2p_management_dashboard.Client360">
-    <div class="c2p_dashboard c2p_client360">
+    <div class="c2p_dashboard c2p_client360 h-100 overflow-auto">
 
         <div class="c2p_topbar">
             <div class="c2p_topbar_title">

@@ -16,8 +16,15 @@ $c2p-muted: #5C5C5C;
     background: $c2p-bg;
     color: $c2p-charcoal;
     padding: 20px 24px 48px;
-    min-height: 100%;
-    overflow: auto;
+    // The action manager gives this component a bounded box. min-height with
+    // overflow:auto overflowed that box instead of scrolling inside it, which
+    // left everything below the fold unreachable. Bound the height and scroll
+    // here.
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     font-size: 15px;
 
     h1 { font-size: 30px; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
@@ -298,4 +305,68 @@ $c2p-muted: #5C5C5C;
 @keyframes c2p_rise {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: none; }
+}
+
+// ============================================================================
+// Ring gauges, numbered sections and margin chips.
+//
+// The first screen was a stack of tables, which reads as a report rather than
+// a dashboard. These give it a shape: a band, then four rings for the health
+// of the business, then the numbered sections in the order she reads them.
+// ============================================================================
+
+.c2p_dashboard {
+    counter-reset: c2p_section;
+
+    // ---------------- ring strip ----------------
+    .c2p_rings {
+        display: grid; gap: 12px; margin-bottom: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    }
+    .c2p_ring_card {
+        background: $c2p-card; border: 1px solid $c2p-rule; padding: 16px 18px;
+        display: flex; align-items: center; gap: 16px;
+    }
+    .c2p_ring {
+        width: 84px; height: 84px; flex: 0 0 84px;
+        transform: rotate(-90deg);   // start the arc at twelve o'clock
+    }
+    .c2p_ring_track { fill: none; stroke: #E6E6E2; stroke-width: 11; }
+    .c2p_ring_fill {
+        fill: none; stroke-width: 11; stroke-linecap: butt;
+        transition: stroke-dasharray 400ms ease-out;
+    }
+    .c2p_ring_good { stroke: $c2p-charcoal; }
+    .c2p_ring_watch { stroke: #E08A00; }
+    .c2p_ring_bad { stroke: $c2p-red; }
+
+    .c2p_ring_meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .c2p_ring_value {
+        font-size: 30px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+    }
+    .c2p_ring_label {
+        font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+    }
+    .c2p_ring_foot { font-size: 12px; color: $c2p-muted; }
+
+    // ---------------- numbered sections ----------------
+    .c2p_panel { counter-increment: c2p_section; }
+    .c2p_panel > header h2::before {
+        content: counter(c2p_section, decimal-leading-zero);
+        display: inline-block; margin-right: 10px;
+        font-size: 15px; font-weight: 700; color: $c2p-red;
+        vertical-align: 3px; letter-spacing: 0;
+    }
+
+    // ---------------- margin chips ----------------
+    .c2p_chip {
+        display: inline-block; padding: 3px 9px; font-weight: 700;
+        font-variant-numeric: tabular-nums; border: 1px solid transparent;
+        min-width: 86px; text-align: right;
+    }
+    .c2p_chip_good { background: #EDF2EE; border-color: #2E6B41; color: #245634; }
+    .c2p_chip_bad { background: #FDF1F2; border-color: $c2p-red; color: $c2p-red; }
+
+    // The hero band leads, so it should not also carry a section number.
+    .c2p_hero { counter-increment: none; }
 }
