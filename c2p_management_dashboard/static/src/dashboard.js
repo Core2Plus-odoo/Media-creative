@@ -143,6 +143,23 @@ export class C2pManagementDashboard extends Component {
         return Math.min(Math.abs(Number(value || 0)) / max * 100, 100);
     }
 
+    /**
+     * Dash array for a progress ring, as a share of its circumference.
+     * Kept here rather than in the template so the template holds no maths.
+     */
+    ringDash(percentage, radius = 42) {
+        const circumference = 2 * Math.PI * radius;
+        return `${(this.clampPct(percentage) / 100) * circumference} ${circumference}`;
+    }
+
+    /** Ring colour band: healthy, watch, or trouble. */
+    ringTone(percentage, invert = false) {
+        const value = Number(percentage || 0);
+        const bad = invert ? value > 66 : value < 34;
+        const watch = invert ? value > 33 : value < 67;
+        return bad ? "c2p_ring_bad" : watch ? "c2p_ring_watch" : "c2p_ring_good";
+    }
+
     donutSegments(buckets) {
         const total = buckets.reduce((sum, bucket) => sum + Math.abs(bucket.amount || 0), 0);
         if (!total) {

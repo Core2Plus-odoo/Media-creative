@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
 <t t-name="c2p_management_dashboard.Dashboard">
-    <div class="c2p_dashboard">
+    <div class="c2p_dashboard h-100 overflow-auto">
 
         <div class="c2p_topbar">
             <div class="c2p_topbar_title">
@@ -39,6 +39,107 @@
         </div>
 
         <t t-if="!this.state.loading and this.state.data">
+
+            <!-- Headline band: the four numbers she opens the screen for. -->
+            <section class="c2p_hero">
+                <div class="c2p_hero_name">
+                    <span class="c2p_hero_label">Period</span>
+                    <h2>
+                        <t t-esc="this.state.data.range.date_from"/> –
+                        <t t-esc="this.state.data.range.date_to"/>
+                    </h2>
+                    <span class="c2p_hero_range" t-esc="this.state.data.companies.join(', ')"/>
+                </div>
+                <div class="c2p_hero_figures">
+                    <div class="c2p_hero_figure">
+                        <span class="c2p_hero_fig_label">Revenue</span>
+                        <span class="c2p_hero_fig_value"
+                              t-esc="this.money(this.state.data.profitability.totals.revenue)"/>
+                    </div>
+                    <div class="c2p_hero_figure">
+                        <span class="c2p_hero_fig_label">Gross margin</span>
+                        <span class="c2p_hero_fig_value"
+                              t-esc="this.money(this.state.data.profitability.totals.gross_margin)"/>
+                        <span class="c2p_hero_fig_foot"
+                              t-esc="this.pct(this.state.data.profitability.totals.margin_pct) + ' of revenue'"/>
+                    </div>
+                    <div class="c2p_hero_figure">
+                        <span class="c2p_hero_fig_label">Hours logged</span>
+                        <span class="c2p_hero_fig_value"
+                              t-esc="this.hours(this.state.data.profitability.totals.hours)"/>
+                    </div>
+                    <div class="c2p_hero_figure c2p_hero_accent">
+                        <span class="c2p_hero_fig_label">At risk</span>
+                        <span class="c2p_hero_fig_value"
+                              t-esc="this.money(this.state.data.margin_leaks.headline)"/>
+                        <span class="c2p_hero_fig_foot">margin leaking</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Three rings: the health of the business in one glance. -->
+            <section class="c2p_rings">
+                <div class="c2p_ring_card">
+                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img"
+                         aria-label="Gross margin as a share of revenue">
+                        <circle cx="50" cy="50" r="42" class="c2p_ring_track"/>
+                        <circle cx="50" cy="50" r="42"
+                                t-attf-class="c2p_ring_fill {{ this.ringTone(this.state.data.profitability.totals.margin_pct) }}"
+                                t-att-stroke-dasharray="this.ringDash(this.state.data.profitability.totals.margin_pct)"/>
+                    </svg>
+                    <div class="c2p_ring_meta">
+                        <span class="c2p_ring_value"
+                              t-esc="this.pct(this.state.data.profitability.totals.margin_pct)"/>
+                        <span class="c2p_ring_label">Gross margin</span>
+                        <span class="c2p_ring_foot">of invoiced revenue</span>
+                    </div>
+                </div>
+                <div class="c2p_ring_card">
+                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img"
+                         aria-label="Utilisation against calendar capacity">
+                        <circle cx="50" cy="50" r="42" class="c2p_ring_track"/>
+                        <circle cx="50" cy="50" r="42"
+                                t-attf-class="c2p_ring_fill {{ this.ringTone(this.state.data.utilisation.totals.utilisation_pct) }}"
+                                t-att-stroke-dasharray="this.ringDash(this.state.data.utilisation.totals.utilisation_pct)"/>
+                    </svg>
+                    <div class="c2p_ring_meta">
+                        <span class="c2p_ring_value"
+                              t-esc="this.pct(this.state.data.utilisation.totals.utilisation_pct)"/>
+                        <span class="c2p_ring_label">Utilisation</span>
+                        <span class="c2p_ring_foot">logged against capacity</span>
+                    </div>
+                </div>
+                <div class="c2p_ring_card">
+                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img"
+                         aria-label="Overdue share of open receivables">
+                        <circle cx="50" cy="50" r="42" class="c2p_ring_track"/>
+                        <circle cx="50" cy="50" r="42"
+                                t-attf-class="c2p_ring_fill {{ this.ringTone(this.state.data.receivables.totals.overdue_pct, true) }}"
+                                t-att-stroke-dasharray="this.ringDash(this.state.data.receivables.totals.overdue_pct)"/>
+                    </svg>
+                    <div class="c2p_ring_meta">
+                        <span class="c2p_ring_value"
+                              t-esc="this.pct(this.state.data.receivables.totals.overdue_pct)"/>
+                        <span class="c2p_ring_label">Overdue</span>
+                        <span class="c2p_ring_foot">of open receivables</span>
+                    </div>
+                </div>
+                <div class="c2p_ring_card">
+                    <svg viewBox="0 0 100 100" class="c2p_ring" role="img"
+                         aria-label="Pipeline win rate">
+                        <circle cx="50" cy="50" r="42" class="c2p_ring_track"/>
+                        <circle cx="50" cy="50" r="42"
+                                t-attf-class="c2p_ring_fill {{ this.ringTone(this.state.data.pipeline.totals.win_rate_pct) }}"
+                                t-att-stroke-dasharray="this.ringDash(this.state.data.pipeline.totals.win_rate_pct)"/>
+                    </svg>
+                    <div class="c2p_ring_meta">
+                        <span class="c2p_ring_value"
+                              t-esc="this.pct(this.state.data.pipeline.totals.win_rate_pct)"/>
+                        <span class="c2p_ring_label">Win rate</span>
+                        <span class="c2p_ring_foot">won against decided</span>
+                    </div>
+                </div>
+            </section>
 
             <!-- 1. Where margin leaks -->
             <section class="c2p_panel c2p_panel_leak">
@@ -119,7 +220,10 @@
                                     </td>
                                     <td class="num" t-esc="this.money(row.revenue)"/>
                                     <td class="num" t-esc="this.money(row.cost)"/>
-                                    <td class="num" t-esc="this.money(row.gross_margin)"/>
+                                    <td class="num">
+                                        <span t-attf-class="c2p_chip {{ row.gross_margin &lt; 0 ? 'c2p_chip_bad' : 'c2p_chip_good' }}"
+                                              t-esc="this.money(row.gross_margin)"/>
+                                    </td>
                                     <td class="num">
                                         <span class="c2p_bar">
                                             <span class="c2p_bar_fill"
