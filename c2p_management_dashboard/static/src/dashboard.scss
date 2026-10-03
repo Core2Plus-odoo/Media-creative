@@ -1,0 +1,216 @@
+// Management dashboard styling.
+//
+// Built to be read across a meeting room: large type, high contrast, charcoal
+// on a light ground with a single red accent. Arial throughout, as specified,
+// so it renders identically on the projector laptop.
+
+$c2p-charcoal: #0F0F0F;
+$c2p-red: #BE1E2D;
+$c2p-bg: #F7F7F5;
+$c2p-card: #FFFFFF;
+$c2p-rule: #D8D8D4;
+$c2p-muted: #5C5C5C;
+
+.c2p_dashboard {
+    font-family: Arial, Helvetica, sans-serif;
+    background: $c2p-bg;
+    color: $c2p-charcoal;
+    padding: 20px 24px 48px;
+    min-height: 100%;
+    overflow: auto;
+    font-size: 15px;
+
+    h1 { font-size: 30px; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
+    h2 { font-size: 22px; font-weight: 700; margin: 0; }
+    h3 { font-size: 15px; font-weight: 700; margin: 20px 0 8px; text-transform: uppercase;
+         letter-spacing: 0.6px; color: $c2p-muted; }
+
+    .c2p_sub { font-size: 14px; font-weight: 400; color: $c2p-muted; display: block; margin-top: 4px; }
+    .c2p_muted { color: $c2p-muted; }
+    .c2p_neg { color: $c2p-red; font-weight: 700; }
+
+    // ---------------- top bar ----------------
+    .c2p_topbar {
+        display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;
+        justify-content: space-between; padding-bottom: 16px;
+        border-bottom: 3px solid $c2p-charcoal; margin-bottom: 20px;
+    }
+    .c2p_companies { font-size: 13px; color: $c2p-muted; }
+
+    .c2p_filter {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: $c2p-muted; }
+        input[type="date"] {
+            font-family: inherit; font-size: 14px; padding: 6px 8px;
+            border: 1px solid $c2p-rule; background: $c2p-card; color: $c2p-charcoal;
+        }
+    }
+    .c2p_preset, .c2p_apply {
+        font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+        padding: 7px 12px; border: 1px solid $c2p-charcoal; background: $c2p-card;
+        color: $c2p-charcoal;
+        &:hover { background: $c2p-charcoal; color: #fff; }
+    }
+    .c2p_apply { background: $c2p-red; border-color: $c2p-red; color: #fff;
+        &:hover { background: darken($c2p-red, 8%); border-color: darken($c2p-red, 8%); } }
+
+    // ---------------- notices ----------------
+    .c2p_notice {
+        padding: 10px 14px; margin-bottom: 16px; font-size: 14px;
+        border-left: 5px solid $c2p-red; background: #FDF1F2;
+    }
+    .c2p_notice_demo { border-left-color: $c2p-charcoal; background: #EFEFEC; }
+    .c2p_loading { padding: 32px 0; font-size: 16px; color: $c2p-muted; }
+
+    // ---------------- panels ----------------
+    .c2p_panel {
+        background: $c2p-card; border: 1px solid $c2p-rule; padding: 20px 22px 24px;
+        margin-bottom: 20px;
+        > header { border-bottom: 1px solid $c2p-rule; padding-bottom: 12px; margin-bottom: 16px; }
+    }
+
+    .c2p_panel_leak {
+        border: 2px solid $c2p-charcoal;
+        .c2p_leak_body { display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch; }
+        .c2p_leak_headline {
+            flex: 0 0 300px; background: $c2p-charcoal; color: #fff;
+            padding: 22px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .c2p_leak_amount { font-size: 40px; font-weight: 700; line-height: 1.05; color: #fff; }
+        .c2p_leak_caption { font-size: 14px; color: #CFCFCF; margin-top: 6px; }
+        .c2p_leak_parts { flex: 1 1 520px; display: grid; gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+        .c2p_leak_part {
+            text-align: left; font-family: inherit; cursor: pointer;
+            background: $c2p-bg; border: 1px solid $c2p-rule; border-top: 4px solid $c2p-red;
+            padding: 14px; display: flex; flex-direction: column; gap: 4px;
+            &:hover { background: #fff; border-color: $c2p-charcoal; }
+        }
+        .c2p_leak_part_amount { font-size: 24px; font-weight: 700; }
+        .c2p_leak_part_label { font-size: 14px; font-weight: 700; }
+        .c2p_leak_part_detail { font-size: 13px; color: $c2p-muted; }
+    }
+
+    // ---------------- KPI cards ----------------
+    .c2p_kpis {
+        display: grid; gap: 12px; margin-bottom: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    .c2p_kpi {
+        background: $c2p-bg; border: 1px solid $c2p-rule; padding: 14px 16px;
+        display: flex; flex-direction: column; gap: 4px;
+        &.c2p_kpi_accent { border-top: 4px solid $c2p-red; background: #fff; }
+    }
+    .c2p_kpi_label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.7px; color: $c2p-muted; }
+    .c2p_kpi_value { font-size: 26px; font-weight: 700; line-height: 1.1; }
+    .c2p_kpi_foot { font-size: 12px; color: $c2p-muted; }
+    .c2p_kpi_drill {
+        align-self: flex-start; font-family: inherit; font-size: 12px; font-weight: 700;
+        background: none; border: none; padding: 0; color: $c2p-red; cursor: pointer;
+        text-decoration: underline;
+    }
+
+    // ---------------- tables ----------------
+    .c2p_two_col {
+        display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    }
+    .c2p_table {
+        width: 100%; border-collapse: collapse; font-size: 14px;
+        th, td { padding: 8px 10px; border-bottom: 1px solid $c2p-rule; text-align: left; vertical-align: top; }
+        th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px;
+             color: $c2p-muted; border-bottom: 2px solid $c2p-charcoal; white-space: nowrap; }
+        td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        tbody tr:hover { background: $c2p-bg; }
+    }
+    .c2p_empty { color: $c2p-muted; font-style: italic; }
+    .c2p_footnote { font-size: 13px; color: $c2p-muted; margin: 10px 0 0; }
+    .c2p_week { margin-top: 18px; }
+    .c2p_peer { display: block; font-size: 13px; }
+    .c2p_won {
+        display: inline-block; margin-left: 6px; padding: 1px 6px; font-size: 11px;
+        font-weight: 700; text-transform: uppercase; background: $c2p-charcoal; color: #fff;
+    }
+    .c2p_link {
+        font-family: inherit; font-size: inherit; background: none; border: none; padding: 0;
+        color: $c2p-charcoal; font-weight: 700; cursor: pointer; text-align: left;
+        text-decoration: underline; text-decoration-color: $c2p-red; text-underline-offset: 3px;
+        &:hover { color: $c2p-red; }
+    }
+    .c2p_drill {
+        font-family: inherit; font-size: 15px; line-height: 1; cursor: pointer;
+        background: none; border: 1px solid $c2p-rule; padding: 3px 7px; color: $c2p-charcoal;
+        &:hover { background: $c2p-charcoal; color: #fff; border-color: $c2p-charcoal; }
+    }
+
+    // ---------------- bars ----------------
+    .c2p_bar {
+        display: inline-block; width: 100%; min-width: 90px; height: 12px;
+        background: #E6E6E2; vertical-align: middle;
+    }
+    .c2p_bar_fill { display: block; height: 100%; background: $c2p-charcoal; }
+
+    .c2p_burn {
+        position: relative; display: inline-block; width: 100%; min-width: 120px;
+        height: 14px; background: #E6E6E2; vertical-align: middle;
+    }
+    .c2p_burn_fill { display: block; height: 100%; background: $c2p-charcoal; }
+    .c2p_burn_warn { background: #E08A00; }
+    .c2p_burn_over { background: $c2p-red; }
+    // the 80% line the alert fires on
+    .c2p_burn_mark {
+        position: absolute; top: -2px; bottom: -2px; left: 80%;
+        width: 2px; background: $c2p-red;
+    }
+    .c2p_burn_pct { font-size: 13px; font-weight: 700; margin-left: 8px; font-variant-numeric: tabular-nums; }
+
+    // ---------------- receivables ----------------
+    .c2p_receivables { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
+    .c2p_donut_wrap { flex: 0 0 180px; }
+    .c2p_donut { width: 180px; height: 180px; transform: rotate(-90deg); }
+    .c2p_donut_track { fill: none; stroke: #E6E6E2; stroke-width: 18; }
+    .c2p_donut_seg { fill: none; stroke-width: 18; }
+    .c2p_shade_0 { stroke: #BDBDB8; }
+    .c2p_shade_1 { stroke: #7A7A74; }
+    .c2p_shade_2 { stroke: #3D3D3A; }
+    .c2p_shade_3 { stroke: $c2p-charcoal; }
+    .c2p_shade_4 { stroke: $c2p-red; }
+    .c2p_donut_total {
+        transform: rotate(90deg); transform-origin: 70px 70px; text-anchor: middle;
+        font-size: 15px; font-weight: 700; fill: $c2p-charcoal;
+    }
+    .c2p_donut_caption {
+        transform: rotate(90deg); transform-origin: 70px 70px; text-anchor: middle;
+        font-size: 11px; fill: $c2p-muted; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .c2p_ageing { flex: 1 1 420px; }
+    .c2p_ageing_row {
+        display: grid; grid-template-columns: 110px 1fr 140px; gap: 12px;
+        align-items: center; padding: 5px 0; font-size: 14px;
+    }
+    .c2p_ageing_label { color: $c2p-muted; }
+    .c2p_ageing_amount { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .c2p_ageing_total {
+        margin-top: 12px; padding-top: 12px; border-top: 2px solid $c2p-charcoal;
+        font-size: 16px; font-weight: 700;
+    }
+
+    // ---------------- client 360 ----------------
+    .c2p_overlay {
+        position: fixed; inset: 0; background: rgba(15, 15, 15, 0.55);
+        display: flex; align-items: flex-start; justify-content: center;
+        padding: 40px 20px; z-index: 1050; overflow: auto;
+    }
+    .c2p_overlay_card {
+        background: $c2p-card; border-top: 6px solid $c2p-red; max-width: 1180px; width: 100%;
+        padding: 22px 24px 28px;
+    }
+    .c2p_overlay_head {
+        display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+        border-bottom: 2px solid $c2p-charcoal; padding-bottom: 12px; margin-bottom: 16px;
+    }
+    .c2p_close {
+        font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+        padding: 7px 14px; border: 1px solid $c2p-charcoal; background: $c2p-card;
+        &:hover { background: $c2p-charcoal; color: #fff; }
+    }
+}

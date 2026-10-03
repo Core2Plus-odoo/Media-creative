@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_management_dashboard" model="ir.module.category">
+        <field name="name">Management Dashboard</field>
+        <field name="description">Agency-wide profitability, utilisation and pipeline reporting.</field>
+        <field name="sequence">46</field>
+    </record>
+
+    <record id="group_dashboard_viewer" model="res.groups">
+        <field name="name">Management Dashboard Viewer</field>
+        <field name="category_id" ref="module_category_management_dashboard"/>
+        <field name="comment">May open the management dashboard. The dashboard runs under
+            the user's own access rights, so a viewer sees only the companies and the
+            records they are already entitled to: granting this group alone does not
+            expose accounting, HR or CRM data.</field>
+    </record>
+</odoo>
