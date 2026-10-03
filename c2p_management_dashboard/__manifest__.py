@@ -1,6 +1,6 @@
 {
     'name': 'C2P Management Dashboard',
-    'version': '20.0.1.4.0',
+    'version': '20.0.1.5.0',
     'category': 'Services/Project',
     'summary': 'Agency management dashboard: profitability, utilisation, pipeline, '
                'receivables and creative throughput',
@@ -36,6 +36,8 @@ records behind it.
             'c2p_management_dashboard/static/src/dashboard.scss',
             'c2p_management_dashboard/static/src/dashboard.js',
             'c2p_management_dashboard/static/src/dashboard.xml',
+            'c2p_management_dashboard/static/src/client_360.js',
+            'c2p_management_dashboard/static/src/client_360.xml',
         ],
     },
     'application': True,

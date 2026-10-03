@@ -214,6 +214,28 @@ class TestManagementDashboard(TransactionCase):
                     'recent_reviews'):
             self.assertIn(key, data)
 
+    def test_client_list_includes_a_brief_only_client(self):
+        partner = self.env['res.partner'].create({'name': 'Brief Only Client'})
+        self.env['c2p.creative.brief'].create({
+            'name': 'Brief Only Campaign', 'partner_id': partner.id,
+        })
+        clients = self.dashboard.get_client_list(self.date_from, self.date_to)
+        ids = [row['id'] for row in clients]
+        self.assertIn(partner.id, ids,
+                      'a client with creative work but no revenue must still be listed')
+        row = next(row for row in clients if row['id'] == partner.id)
+        for key in ('name', 'revenue', 'margin', 'hours'):
+            self.assertIn(key, row)
+
+    def test_client_list_has_no_duplicates(self):
+        clients = self.dashboard.get_client_list(self.date_from, self.date_to)
+        ids = [row['id'] for row in clients]
+        self.assertEqual(len(ids), len(set(ids)))
+
+    def test_client_360_carries_a_currency_symbol(self):
+        data = self.dashboard.get_client_360(self.client.id, self.date_from, self.date_to)
+        self.assertIn('currency_symbol', data)
+
     def test_client_360_on_a_missing_partner_is_empty(self):
         self.assertEqual(self.dashboard.get_client_360(0), {})
 
