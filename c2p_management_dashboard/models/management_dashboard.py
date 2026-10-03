@@ -61,7 +61,14 @@ class C2pManagementDashboard(models.AbstractModel):
         return date_from, date_to
 
     def _company_domain(self):
-        return [('company_id', 'in', self.env.companies.ids)]
+        """Restrict to the user's companies, keeping company-less records.
+
+        A project or an employee may legitimately carry no company, and such a
+        record belongs to every company rather than none. Matches the shape of
+        the multi-company domain on the ir.access grants.
+        """
+        return ['|', ('company_id', '=', False),
+                ('company_id', 'in', self.env.companies.ids)]
 
     # ==================================================================
     # shared building blocks
@@ -441,7 +448,11 @@ class C2pManagementDashboard(models.AbstractModel):
         calendar = employee.resource_calendar_id or employee.company_id.resource_calendar_id
         if not calendar:
             return 0.0
-        tz = pytz.timezone(calendar.tz or self.env.user.tz or 'UTC')
+        # resource.calendar dropped its tz field in Odoo 20; fall back to the
+        # user's timezone, then UTC.
+        tz_field = self._first_field('resource.calendar', 'tz')
+        tz_name = (tz_field and calendar[tz_field]) or self.env.user.tz or 'UTC'
+        tz = pytz.timezone(tz_name)
         start = tz.localize(datetime.combine(date_from, time.min)).astimezone(pytz.utc)
         end = tz.localize(datetime.combine(date_to, time.max)).astimezone(pytz.utc)
         if hasattr(calendar, 'get_work_hours_count'):

@@ -42,6 +42,10 @@ class CreativeAsset(models.Model):
         compute='_compute_turnaround', store=True, digits=(6, 2),
         string='Approval Turnaround (days)',
         help='Calendar days between the first review round and the approving one.')
+    round_counter = fields.Integer(
+        string='Rounds Issued', default=0, readonly=True, copy=False,
+        help='Highest review round number ever issued for this asset. Kept so a '
+             'withdrawn round never has its number reissued.')
     partner_id = fields.Many2one(related='brief_id.partner_id', store=True)
     company_id = fields.Many2one(related='brief_id.company_id', store=True, index=True)
 
@@ -126,28 +130,33 @@ class CreativeReview(models.Model):
     feedback = fields.Html(string='Feedback')
 
     @api.model
-    def _next_round(self, asset_id):
-        """Highest round recorded for the asset, plus one.
+    def _high_water_mark(self, asset):
+        """Highest round number ever issued for this asset.
 
-        ``max(round)`` rather than a row count, so deleting a round does not hand
-        the next one a number that is already taken.
+        Read from the asset's counter rather than from ``max(round)`` over the
+        live rows, so withdrawing the latest round does not free its number for
+        the next one. Falls back to the live rows for assets that predate the
+        counter.
         """
-        last = self.search([('asset_id', '=', asset_id)], order='round desc', limit=1)
-        return (last.round or 0) + 1
+        existing = asset.review_ids.mapped('round') or [0]
+        return max(asset.round_counter, max(existing))
 
     @api.model_create_multi
     def create(self, vals_list):
-        # Track rounds handed out inside this batch so two rounds created at once
-        # do not both land on the same number.
-        pending = {}
+        # Number each round from the asset's counter, advancing it within this
+        # batch so two rounds created at once cannot land on the same number.
+        assets = self.env['c2p.creative.asset'].browse(
+            {vals['asset_id'] for vals in vals_list if vals.get('asset_id')})
+        issued = {asset.id: self._high_water_mark(asset) for asset in assets}
         for vals in vals_list:
             asset_id = vals.get('asset_id')
             if asset_id and not vals.get('round'):
-                if asset_id not in pending:
-                    pending[asset_id] = self._next_round(asset_id)
-                vals['round'] = pending[asset_id]
-                pending[asset_id] += 1
+                issued[asset_id] += 1
+                vals['round'] = issued[asset_id]
         reviews = super().create(vals_list)
+        for asset in assets:
+            if asset.round_counter < issued[asset.id]:
+                asset.round_counter = issued[asset.id]
         for rev in reviews:
             if rev.decision == 'approved':
                 rev.asset_id.state = 'approved'
