@@ -14,7 +14,7 @@ art-direct deliverables through review rounds and secure approval.
     'depends': ['base', 'mail', 'hr', 'project'],
     'data': [
         'security/creative_studio_groups.xml',
-        'security/ir.model.access.csv',
+        'security/ir.access.csv',
         'data/sequence.xml',
         'views/creative_brief_views.xml',
         'views/creative_concept_views.xml',
