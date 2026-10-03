@@ -25,9 +25,12 @@
             </div>
         </div>
 
-        <div class="c2p_notice c2p_notice_demo" t-if="state.data and state.data.demo_data">
-            This database carries demo/seeded data. Figures below are read from those
-            seeded records, not from real trading activity.
+        <div class="c2p_notice c2p_notice_demo"
+             t-if="state.data and (state.data.demo_data or state.data.seeded_records)">
+            <strong>Seeded data.</strong>
+            This database contains seeded demonstration records. Every figure below is
+            read from real records, but those records were seeded for the demo rather
+            than produced by actual trading activity.
         </div>
 
         <div class="c2p_loading" t-if="state.loading">Reading records…</div>

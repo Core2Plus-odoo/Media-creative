@@ -19,7 +19,10 @@ function isoDate(date) {
  */
 export class C2pManagementDashboard extends Component {
     static template = "c2p_management_dashboard.Dashboard";
-    static props = ["*"];
+    // No static props declaration: Owl 3 (Odoo 20) rejects static props and
+    // defaultProps outright. This component reads nothing off this.props -- the
+    // client action passes the usual action bag and we ignore it -- so there is
+    // no schema to express through useProps.
 
     setup() {
         this.orm = useService("orm");

@@ -81,17 +81,16 @@ class CreativeAsset(models.Model):
             rec.message_post(body=_('Version %s uploaded and sent for review.', rec.version))
 
     @api.model
-    def _demo_assign_designers(self):
-        """Give the demo assets real designers from whatever employees this database has.
+    def _c2p_seed_assign_designers(self):
+        """Give the seeded assets real designers from whatever employees this database has.
 
         The seeded employees are not XML-id addressable, so look them up instead of
         inventing names. Does nothing if the database has no employees.
         """
-        assets = self.env.ref('c2p_creative_studio.demo_brief_digital_savings',
-                              raise_if_not_found=False)
+        briefs = self.env['c2p.creative.brief'].search([])
+        assets = briefs.asset_ids.filtered(lambda a: not a.designer_id).sorted('id')
         if not assets:
             return
-        assets = assets.asset_ids.sorted('id')
         employees = self.env['hr.employee'].sudo().search(
             [('company_id', 'in', self.env.companies.ids)], order='id', limit=len(assets))
         if not employees:

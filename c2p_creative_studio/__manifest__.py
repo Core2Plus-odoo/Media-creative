@@ -1,6 +1,6 @@
 {
     'name': 'C2P Creative Studio',
-    'version': '20.0.1.0.0',
+    'version': '20.0.1.1.0',
     'category': 'Services/Project',
     'summary': 'Creative briefs, concept routes, art-direction reviews and approvals for agencies',
     'description': """
@@ -20,9 +20,7 @@ art-direct deliverables through review rounds and secure approval.
         'views/creative_concept_views.xml',
         'views/creative_asset_views.xml',
         'views/menus.xml',
-    ],
-    'demo': [
-        'demo/creative_studio_demo.xml',
+        'data/creative_studio_seed.xml',
     ],
     'application': True,
     'installable': True,
